@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PurushPower | বিশ্বস্ত অনলাইন শপ</title>
+<meta name="description" content="PurushPower — সারা বাংলাদেশে ক্যাশ অন ডেলিভারি। পণ্য হাতে পেয়ে টাকা দিন।">
+<meta name="theme-color" content="#0E5E3A">
+<link rel="icon" id="site-favicon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%230E5E3A'/%3E%3Ctext x='20' y='29' font-size='22' font-weight='800' fill='%23E8A317' text-anchor='middle' font-family='Arial'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://res.cloudinary.com">
+<link rel="preconnect" href="https://firestore.googleapis.com">
+<link rel="preconnect" href="https://www.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<!-- Meta / TikTok / GA pixels are injected dynamically from admin Settings → Analytics (see injectTrackingPixels()). -->
+<style>
+/* ── PurushPower theme ──
+   Bottle green = trust / main actions, turmeric = highlight ring & badges,
+   sindoor red = prices and sale. White base, soft mint surface. */
+:root{
+  --primary:#0E5E3A;--primary2:#1C8A56;--accent:#D7322A;--gold:#E8A317;
+  --dark:#FFFFFF;--surface:#F3F7F4;--card:#FFFFFF;--border:#E1E8E3;
+  --text:#16211B;--muted:#65706A;--green:#16A34A;--yellow:#D97706;--radius:12px;
+  --head:'Baloo Da 2','Hind Siliguri',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:'Hind Siliguri','Baloo Da 2',sans-serif;overflow-x:hidden;padding-bottom:70px;}
+a:focus-visible,button:focus-visible,.cat-chip:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+
+/* LOGO */
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.brand-mark{width:36px;height:36px;flex-shrink:0;display:block;}
+.brand-txt{display:flex;flex-direction:column;line-height:1;}
+.brand-name{font-family:var(--head);font-weight:800;font-size:22px;letter-spacing:-.3px;color:var(--primary);}
+.brand-tag{font-family:var(--head);font-size:9px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-top:1px;}
+.brand-img{height:40px;max-width:170px;object-fit:contain;display:block;}
+
+/* COUNTDOWN STRIP */
+.countdown-strip{display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 14px;background:var(--card);flex-wrap:wrap;}
+.cs-label{font-size:12px;font-weight:600;color:var(--muted);}
+.cs-time{display:flex;align-items:center;gap:2px;font-family:var(--head);font-size:15px;font-weight:800;color:var(--accent);letter-spacing:1px;}
+.cs-colon{opacity:.5;margin:0 1px;}
+
+/* TOPBAR */
+.topbar{background:var(--primary);padding:6px 10px;text-align:center;font-size:12.5px;font-weight:500;color:#fff;}
+.topbar a{color:var(--gold);font-weight:700;text-decoration:none;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 14px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-phone{font-size:12px;}
+.nav-phone a{color:var(--primary);text-decoration:none;font-weight:700;}
+.nav-cart{position:relative;cursor:pointer;background:var(--surface);border:1px solid var(--border);padding:7px 12px;border-radius:20px;font-size:14px;color:var(--primary);font-weight:600;}
+.cart-count{position:absolute;top:-6px;right:-6px;background:var(--accent);color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+@media(max-width:380px){.nav-phone{display:none;}}
+
+/* SEARCH */
+.search-bar{background:var(--card);padding:8px 14px 10px;}
+.search-inner{max-width:620px;margin:0 auto;display:flex;background:var(--surface);border:1px solid var(--border);border-radius:24px;overflow:hidden;}
+.search-inner:focus-within{border-color:var(--primary);}
+.search-inner input{flex:1;background:none;border:none;color:var(--text);padding:10px 16px;font-size:14px;outline:none;font-family:'Hind Siliguri',sans-serif;}
+.search-inner button{background:var(--primary);border:none;color:#fff;padding:0 18px;font-size:15px;font-weight:700;cursor:pointer;}
+
+/* MARQUEE */
+.marquee-bar{overflow:hidden;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:7px 0;}
+.marquee-inner{display:flex;gap:40px;width:max-content;animation:marquee 22s linear infinite;}
+.marquee-inner span{font-size:12px;color:var(--muted);white-space:nowrap;}
+.marquee-inner span strong{color:var(--gold);margin-right:4px;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* BANNER — rounded card like a shop-window, crossfade between slides */
+.banner-wrap{position:relative;overflow:hidden;aspect-ratio:5/2;height:auto;background:var(--surface);margin:10px 12px 2px;border-radius:14px;}
+@media(min-width:600px){.banner-wrap{aspect-ratio:3/1;max-height:250px;border-radius:16px;}}
+@media(min-width:1000px){.banner-wrap{max-height:300px;max-width:1200px;margin:14px auto 4px;}}
+.banner-3d-stage{position:relative;width:100%;height:100%;}
+.banner-slides{position:absolute;inset:0;}
+.banner-slide{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;opacity:0;transform:scale(1.04);transition:opacity 1s ease,transform 1.3s ease;background-size:cover;background-repeat:no-repeat;background-position:center;background-color:var(--surface);}
+.banner-slide.active{opacity:1;transform:scale(1);z-index:5;}
+.banner-slide>.banner-mini-slideshow,.banner-slide>iframe{width:100%;height:100%;}
+.banner-slide-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.08) 45%,rgba(0,0,0,0) 70%);z-index:1;pointer-events:none;}
+.banner-slide.no-text .banner-slide-overlay{display:none;}
+.banner-tunnel{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;display:none;}
+.tunnel-card{position:absolute;border-radius:8px;overflow:hidden;background-size:cover;background-position:center;opacity:.22;}
+.banner-vignette{display:none;}
+
+.banner-mini-slideshow{position:absolute;inset:0;}
+.bms-layer{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1s ease-in-out;}
+.bms-layer.active{opacity:1;}
+/* legacy banner effects (kept for old banner data) */
+.b1{background:#000;}
+.b1-grid{position:absolute;inset:0;}
+.b2{background:linear-gradient(135deg,#0a0a1a,#1a0a2e);}
+.b2-orb{position:absolute;border-radius:50%;filter:blur(60px);}
+.b3{background:#000;}
+.b3-bg{position:absolute;inset:0;background:linear-gradient(135deg,#001a00,#002a00);}
+.b3-scan{position:absolute;width:100%;height:2px;background:rgba(34,197,94,0.5);}
+.b4{background:linear-gradient(180deg,#1a0000,#300500);}
+.b5{background:linear-gradient(180deg,#000510,#001030);}
+.star{position:absolute;background:#fff;border-radius:50%;}
+
+.b-content{position:relative;z-index:2;text-align:left;padding:0 16px;max-width:300px;}
+@media(min-width:600px){.b-content{padding:0 44px;max-width:460px;}}
+.b-title{font-family:var(--head);font-size:clamp(18px,5vw,34px);font-weight:800;color:#fff;line-height:1.1;margin-bottom:4px;text-shadow:0 2px 12px rgba(0,0,0,.25);}
+.b-title .hl{color:var(--gold);}
+.b-sub{font-size:12.5px;color:rgba(255,255,255,0.9);margin-bottom:10px;}
+.b-btn{padding:7px 18px;border-radius:50px;font-weight:700;font-size:13px;border:none;cursor:pointer;font-family:'Hind Siliguri',sans-serif;}
+.b-btn-cyan{background:var(--gold);color:#1b1300;}
+/* Default brand banner (until admin adds one) */
+.bbd{background:linear-gradient(115deg,#0B4F31 0%,#0E5E3A 45%,#17784B 100%);justify-content:space-between;}
+.bbd-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.bbd-glow.g1{width:55%;aspect-ratio:1;left:-18%;top:-60%;background:radial-gradient(circle,rgba(232,163,23,.28),transparent 65%);}
+.bbd-glow.g2{width:40%;aspect-ratio:1;right:20%;bottom:-70%;background:radial-gradient(circle,rgba(255,255,255,.12),transparent 65%);}
+.bbd-text{position:relative;z-index:2;padding:0 0 0 5%;max-width:62%;}
+.bbd-pill{display:inline-block;background:#E8A317;color:#1b1300;font-weight:700;font-size:clamp(9px,2.4vw,13px);padding:2px 10px;border-radius:50px;margin-bottom:clamp(3px,1vw,8px);}
+.bbd-title{font-family:var(--head);font-weight:800;color:#fff;font-size:clamp(22px,6.4vw,50px);line-height:1;letter-spacing:-.5px;}
+.bbd-title span{color:#E8A317;}
+.bbd-sub{color:rgba(255,255,255,.88);font-size:clamp(10px,2.7vw,16px);margin:clamp(3px,1vw,8px) 0 clamp(6px,1.6vw,14px);}
+.bbd-btn{background:#fff;color:#0E5E3A;border:none;font-weight:700;font-family:'Hind Siliguri',sans-serif;font-size:clamp(10.5px,2.6vw,15px);padding:clamp(4px,1.2vw,9px) clamp(12px,3vw,24px);border-radius:50px;cursor:pointer;}
+.bbd-btn:hover{background:#E8A317;color:#1b1300;}
+.bbd-art{position:relative;z-index:1;height:100%;width:auto;max-width:40%;flex-shrink:0;margin-right:2%;}
+.b-btn-purple{background:var(--primary);color:#fff;}
+.b-btn-green{background:transparent;border:2px solid var(--green);color:var(--green);}
+.b-btn-fire{background:var(--accent);color:#fff;}
+.b-btn-gold{background:var(--gold);color:#1b1300;font-weight:800;}
+
+.glitch{font-family:var(--head);font-size:clamp(18px,5vw,34px);font-weight:900;color:#fff;}
+.analog-wrap{position:relative;display:inline-block;}
+.ac-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;color:#FFD700;}
+.fire-p{position:absolute;bottom:0;border-radius:50%;}
+
+.banner-dots{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:10;}
+.banner-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55);cursor:pointer;transition:all .3s;box-shadow:0 0 2px rgba(0,0,0,.3);}
+.banner-dot.active{background:#fff;width:18px;border-radius:4px;}
+.banner-prev,.banner-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.85);border:none;color:var(--primary);width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.banner-prev{left:8px;}.banner-next{right:8px;}
+
+/* SECTION WRAPPERS */
+.cats-section,.products-section{max-width:1200px;margin:0 auto;}
+.sec-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
+.sec-title{font-family:var(--head);font-size:21px;font-weight:800;color:var(--text);}
+@media(min-width:600px){.sec-title{font-size:26px;}}
+
+/* TOP CATEGORIES — round photos with a turmeric ring (the signature element) */
+.cats-section{padding:18px 14px 8px;}
+.cats-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none;scroll-snap-type:x proximity;}
+.cats-scroll::-webkit-scrollbar{display:none;}
+.cat-chip{flex:0 0 auto;width:102px;text-align:center;cursor:pointer;scroll-snap-align:start;-webkit-tap-highlight-color:transparent;}
+.cat-circle{width:92px;height:92px;border-radius:50%;margin:0 auto 8px;overflow:hidden;background:var(--surface);border:3px solid #fff;box-shadow:0 0 0 2px var(--border);display:flex;align-items:center;justify-content:center;font-size:34px;transition:box-shadow .2s,transform .2s;}
+.cat-circle img{width:100%;height:100%;object-fit:cover;display:block;}
+.cat-chip:hover .cat-circle{transform:translateY(-2px);}
+.cat-chip.active .cat-circle{box-shadow:0 0 0 3px var(--gold);}
+.cat-name{font-size:13px;font-weight:600;line-height:1.35;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cat-chip.active .cat-name{color:var(--primary);}
+@media(min-width:700px){.cat-chip{width:150px;}.cat-circle{width:136px;height:136px;font-size:44px;}.cat-name{font-size:15px;}}
+
+/* PRODUCTS */
+.products-section{padding:14px 12px 20px;}
+.p-count{font-size:12px;color:var(--muted);}
+.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:480px){.products-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:800px){.products-grid{grid-template-columns:repeat(4,1fr);gap:14px;}}
+@media(min-width:1100px){.products-grid{grid-template-columns:repeat(5,1fr);}}
+/* Home auto-rotating product pages */
+/* double-buffer: next page is painted & decoded underneath, then crossfaded in — no blank flash */
+.products-grid.rot-mode{display:block;position:relative;}
+.rot-layer{transition:opacity .45s ease;will-change:opacity;}
+.rot-layer.front{position:relative;opacity:1;z-index:2;}
+.rot-layer.back{position:absolute;top:0;left:0;right:0;opacity:0;z-index:1;pointer-events:none;}
+.rot-mode .pc{animation:none;}
+.p-rot-ctrl{display:none;flex-direction:column;align-items:center;gap:10px;margin-top:14px;}
+.p-rot-ctrl.on{display:flex;}
+.p-rot-dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.p-rot-dot{width:8px;height:8px;border-radius:50%;background:var(--border);border:none;padding:0;cursor:pointer;transition:all .2s;}
+.p-rot-dot.active{background:var(--primary);width:22px;border-radius:6px;}
+.p-rot-all{background:var(--card);border:1.5px solid var(--primary);color:var(--primary);padding:9px 22px;border-radius:50px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Hind Siliguri',sans-serif;}
+.p-rot-all:hover{background:var(--primary);color:#fff;}
+
+@keyframes springIn{0%{transform:translateY(14px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
+.pc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:border-color .2s;animation:springIn .4s ease both;display:flex;flex-direction:column;}
+.pc:hover{border-color:var(--primary2);}
+.pc-img{width:100%;aspect-ratio:1;background:#fff;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);}
+.pc-img-3d{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#fff;}
+.pc-img-3d img{position:relative;width:100%;height:100%;object-fit:cover;background:#fff;}
+.pc-img-ph{font-size:40px;}
+.vid-badge{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;}
+.disc-badge{position:absolute;top:6px;left:6px;background:var(--gold);color:#1b1300;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:800;}
+.pc-body{padding:9px 10px 10px;display:flex;flex-direction:column;flex:1;}
+.pc-cat{font-size:10px;color:var(--primary2);font-weight:600;margin-bottom:2px;}
+.pc-name{font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:38px;}
+.pc-price{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;margin-top:auto;}
+.price-now{font-family:var(--head);font-size:18px;font-weight:800;color:var(--accent);}
+.price-old{font-size:12px;color:var(--muted);text-decoration:line-through;}
+.pc-btn{width:100%;background:var(--primary);border:none;color:#fff;padding:8px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Hind Siliguri',sans-serif;transition:background .2s;}
+.pc-btn:hover{background:var(--primary2);}
+
+/* REVIEWS */
+.reviews-section{padding:22px 14px;background:var(--surface);border-top:1px solid var(--border);}
+.reviews-inner{max-width:1200px;margin:0 auto;}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:12px;}
+.review-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+.review-stars{color:var(--gold);font-size:14px;margin-bottom:7px;}
+.review-text{font-size:13.5px;color:var(--muted);line-height:1.7;margin-bottom:10px;}
+.reviewer{display:flex;align-items:center;gap:9px;}
+.rev-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.rev-name{font-size:13px;font-weight:600;}
+.rev-loc{font-size:11px;color:var(--muted);}
+.reviews-section.rev-empty{display:none!important;}
+.rev-banner{border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:22px 18px;text-align:center;position:relative;}
+.rev-banner.has-img{padding:0;background:#000;}
+.rev-banner.has-img img{display:block;width:100%;height:auto;max-height:340px;object-fit:cover;}
+.rev-banner-title{font-family:var(--head);font-size:22px;font-weight:800;}
+.rev-banner-sub{font-size:13.5px;opacity:.9;margin-top:4px;}
+.rev-banner-stat{display:inline-block;margin-top:10px;background:rgba(255,255,255,.18);padding:5px 14px;border-radius:30px;font-size:13px;font-weight:600;}
+.rev-banner-stat:empty{display:none;}
+.rev-photo{width:100%;border-radius:8px;margin-bottom:9px;display:block;max-height:260px;object-fit:cover;cursor:zoom-in;}
+.rev-av img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;height:58px;}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;flex:1;padding:6px 0;transition:color .2s;color:var(--muted);}
+.bn-item.active,.bn-item:hover{color:var(--primary);}
+.bn-icon{font-size:20px;}
+.bn-label{font-size:10.5px;font-weight:600;}
+
+/* WHATSAPP FLOAT */
+.wa-float{position:fixed;right:14px;bottom:74px;z-index:160;width:54px;height:54px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(37,211,102,.45);text-decoration:none;}
+.wa-float svg{width:30px;height:30px;fill:#fff;}
+.wa-float::before{content:'';position:absolute;inset:0;border-radius:50%;background:#25D366;animation:waPing 2.4s ease-out infinite;z-index:-1;}
+@keyframes waPing{0%{transform:scale(1);opacity:.55;}80%,100%{transform:scale(1.55);opacity:0;}}
+
+/* MODALS */
+.mo{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,20,14,.75);padding:10px;align-items:flex-end;justify-content:center;}
+.mo.active{display:flex;}
+@media(min-width:520px){.mo{align-items:center;}}
+
+.pd-modal{background:var(--card);border-radius:16px 16px 0 0;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;padding:16px;}
+@media(min-width:520px){.pd-modal{border-radius:16px;}}
+.mc{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
+.pd-img{width:100%;aspect-ratio:1/1;background:#fff;border-radius:10px;margin-bottom:11px;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:zoom-in;position:relative;border:1px solid var(--border);}
+.pd-zoom-hint{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;pointer-events:none;}
+
+.image-zoom-overlay{background:rgba(0,0,0,.96);align-items:center;justify-content:center;flex-direction:column;}
+.image-zoom-overlay img{max-width:92vw;max-height:82vh;object-fit:contain;}
+.zoom-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.12);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:18px;cursor:pointer;z-index:10;}
+.zoom-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:#fff;width:42px;height:42px;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;left:10px;}
+.zoom-nav-right{left:auto;right:10px;}
+.zoom-counter{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.12);color:#fff;padding:5px 14px;border-radius:20px;font-size:13px;}
+.pd-img img{width:100%;height:100%;object-fit:contain;}
+.pd-vid{width:100%;aspect-ratio:16/9;border-radius:10px;margin-bottom:11px;border:none;}
+.pd-name{font-family:var(--head);font-size:20px;font-weight:700;margin-bottom:6px;line-height:1.3;}
+.pd-price-wrap{display:flex;align-items:baseline;gap:9px;margin-bottom:9px;}
+.pd-price{font-family:var(--head);font-size:26px;font-weight:800;color:var(--accent);}
+.pd-old{font-size:14px;color:var(--muted);text-decoration:line-through;}
+.pd-disc{background:var(--gold);color:#1b1300;font-size:11px;font-weight:800;padding:2px 7px;border-radius:4px;}
+.pd-delivery{display:flex;align-items:center;gap:7px;background:rgba(14,94,58,.07);border:1px solid rgba(14,94,58,.2);border-radius:8px;padding:7px 11px;margin-bottom:9px;font-size:13px;color:var(--primary);}
+.pd-desc-title{font-family:var(--head);font-weight:700;font-size:15px;color:var(--primary);margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--border);}
+.pd-desc{font-size:13.5px;color:var(--muted);line-height:1.75;margin-bottom:11px;white-space:pre-line;}
+.pd-disclaimer{font-size:12px;color:#92400E;line-height:1.7;margin-bottom:11px;white-space:pre-line;background:rgba(232,163,23,.1);border:1px solid rgba(232,163,23,.35);border-radius:8px;padding:10px 12px;}
+.qty-wrap{display:flex;align-items:center;gap:9px;margin-bottom:13px;}
+.qty-lbl{font-size:13px;color:var(--muted);}
+.qty-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qty-num{font-family:var(--head);font-size:18px;font-weight:800;min-width:27px;text-align:center;}
+.qty-total{font-size:13px;color:var(--muted);}
+.qty-total strong{color:var(--accent);}
+.pd-order-btn{width:100%;background:var(--primary);border:none;color:#fff;padding:13px;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Hind Siliguri',sans-serif;margin-bottom:7px;}
+.pd-wa-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#25D366;color:#fff;padding:11px;border-radius:10px;font-size:14.5px;font-weight:700;text-decoration:none;margin-bottom:7px;}
+.pd-wa-btn svg{width:20px;height:20px;fill:#fff;}
+.pd-cart-btn{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--primary);padding:10px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Hind Siliguri',sans-serif;margin-bottom:7px;}
+.pd-call-btn{width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:9px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:block;text-align:center;}
+
+/* ORDER MODAL */
+.order-modal{background:var(--card);border-radius:16px 16px 0 0;width:100%;max-width:500px;max-height:94vh;overflow-y:auto;padding:16px;}
+@media(min-width:500px){.order-modal{border-radius:16px;}}
+.order-top-banner{background:rgba(14,94,58,.06);border:1px solid rgba(14,94,58,.25);border-radius:11px;padding:12px;margin-bottom:14px;text-align:center;}
+.otb-emoji{font-size:26px;margin-bottom:5px;}
+.otb-line1{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.otb-line1 span{color:var(--accent);}
+.otb-line2{font-size:12px;color:var(--muted);}
+.otb-urgency{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:7px;font-size:12px;color:var(--yellow);}
+
+.order-product-preview{display:flex;gap:11px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px;margin-bottom:12px;}
+.opp-img{width:60px;height:60px;border-radius:7px;overflow:hidden;flex-shrink:0;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:26px;}
+.opp-img img{width:100%;height:100%;object-fit:cover;}
+.opp-name{font-size:13.5px;font-weight:600;margin-bottom:3px;}
+.opp-price{font-family:var(--head);font-size:17px;font-weight:800;color:var(--accent);}
+.opp-old{font-size:11px;color:var(--muted);text-decoration:line-through;margin-left:5px;}
+
+.order-qty-wrap{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px;margin-bottom:12px;}
+.oqw-label{font-size:13px;color:var(--muted);}
+.oqw-controls{display:flex;align-items:center;gap:9px;}
+.oqw-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.oqw-num{font-family:var(--head);font-size:16px;font-weight:800;min-width:22px;text-align:center;}
+.oqw-total{font-family:var(--head);font-size:14px;font-weight:700;color:var(--accent);}
+
+.del-opt-label{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px;}
+.del-opt{display:flex;align-items:center;gap:9px;padding:10px 13px;border-radius:9px;border:1px solid var(--border);cursor:pointer;margin-bottom:5px;font-size:14px;}
+.del-opt.selected{border-color:var(--green);background:rgba(34,197,94,.08);}
+.del-opt-price{margin-left:auto;font-weight:700;color:var(--green);}
+
+.order-summary-table{background:var(--surface);border-radius:9px;padding:11px;margin-bottom:12px;}
+.ost-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);}
+.ost-row:last-child{border-bottom:none;padding-top:9px;margin-top:3px;font-weight:700;font-size:14px;}
+.ost-total-val{color:var(--accent);}
+
+.fg{margin-bottom:11px;}
+.fg label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:5px;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:14px;font-family:'Hind Siliguri',sans-serif;outline:none;transition:border-color .2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--primary);}
+.fg textarea{resize:vertical;min-height:58px;}
+
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;}
+.pay-opt{border:2px solid var(--border);border-radius:9px;padding:9px 7px;cursor:pointer;text-align:center;}
+.pay-info-box{display:none;}
+.cod-free-badge{display:flex;align-items:center;gap:10px;background:rgba(14,94,58,.06);border:1px solid rgba(14,94,58,.22);border-radius:10px;padding:11px 13px;}
+.copy-btn{background:none;border:1px solid var(--border);color:var(--primary);padding:2px 8px;border-radius:5px;font-size:11px;cursor:pointer;margin-left:5px;}
+
+.submit-btn{width:100%;background:var(--accent);border:none;color:#fff;padding:14px;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Hind Siliguri',sans-serif;margin-top:4px;}
+.submit-btn:disabled{opacity:.7;}
+.success-wrap{text-align:center;padding:22px 14px;}
+.success-icon{font-size:52px;margin-bottom:9px;animation:sBounce .6s ease;}
+@keyframes sBounce{0%{transform:scale(0);}60%{transform:scale(1.2);}100%{transform:scale(1);}}
+.success-title{font-family:var(--head);font-size:22px;font-weight:800;margin-bottom:7px;color:var(--primary);}
+.success-sub{color:var(--muted);font-size:13.5px;line-height:1.6;}
+
+/* CART MODAL */
+.cart-modal{background:var(--card);border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;padding:16px;}
+@media(min-width:480px){.cart-modal{border-radius:16px;}}
+.ci-row{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
+.ci-img{width:50px;height:50px;border-radius:7px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;}
+.ci-img img{width:100%;height:100%;object-fit:cover;}
+.ci-info{flex:1;}
+.ci-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.ci-price{font-size:12px;color:var(--accent);font-weight:700;}
+.ci-rm{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;}
+
+.page-section{display:none;padding:14px 12px;max-width:800px;margin:0 auto;}
+.page-section.active{display:block;}
+
+/* CONTACT */
+.contact-section{padding:16px 2px;}
+.contact-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;}
+.contact-title{font-family:var(--head);font-size:18px;font-weight:800;margin-bottom:10px;}
+.contact-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.contact-item:last-child{border-bottom:none;}
+.contact-icon{font-size:20px;flex-shrink:0;}
+.contact-text{font-size:13.5px;}
+.contact-text a{color:var(--primary);text-decoration:none;font-weight:600;}
+
+/* FOOTER */
+footer{background:var(--primary);color:#fff;padding:24px 14px 18px;text-align:center;}
+footer .brand-name{color:#fff;}
+footer .brand-tag{color:var(--gold);}
+.brand-hl{color:var(--gold);}
+.f-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:12px 0;}
+.f-links a{color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;}
+.f-copy{font-size:11.5px;color:rgba(255,255,255,.65);}
+
+.es{text-align:center;padding:40px 14px;color:var(--muted);}
+.es .ei{font-size:36px;margin-bottom:9px;}
+#toast{display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);z-index:999;background:var(--green);color:#fff;padding:8px 16px;border-radius:18px;font-weight:600;font-size:13px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.3);}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar" id="topbar-text">🚚 FREE DELIVERY সারা বাংলাদেশ — অর্ডার করতে কল করুন: <a href="tel:01601855815">01601855815</a></div>
+
+<!-- NAV -->
+<nav>
+  <a class="brand" href="#" id="site-logo" aria-label="PurushPower">
+    <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <path d="M14 13V10.5a6 6 0 0 1 12 0V13" fill="none" stroke="#E8A317" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M7.5 13h25l-1.8 21.2a3 3 0 0 1-3 2.8H12.3a3 3 0 0 1-3-2.8z" fill="#0E5E3A"/>
+      <text x="20" y="32" font-size="15" font-weight="800" fill="#E8A317" text-anchor="middle" font-family="Arial">P</text>
+    </svg>
+    <span class="brand-txt"><span class="brand-name">Purush<span class="brand-hl">Power</span></span><span class="brand-tag">.COM</span></span>
+  </a>
+  <div class="nav-right">
+    <div class="nav-phone">📞 <a href="tel:01601855815">01601855815</a></div>
+    <div class="nav-cart" onclick="openCart()">🛒 <span class="cart-count" id="cart-count">0</span></div>
+  </div>
+</nav>
+
+<!-- SEARCH -->
+<div class="search-bar">
+  <div class="search-inner">
+    <input type="text" placeholder="পণ্য খুঁজুন..." id="search-input" oninput="renderProducts()">
+    <button aria-label="খুঁজুন">🔍</button>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-bar">
+  <div class="marquee-inner">
+    <span><strong>✦</strong> FREE DELIVERY সারা বাংলাদেশ</span>
+    <span><strong>✦</strong> Cash on Delivery</span>
+    <span><strong>✦</strong> ৭ দিন Return Policy</span>
+    <span><strong>✦</strong> পণ্য দেখে টাকা পরিশোধ</span>
+    <span><strong>✦</strong> হটলাইন ও WhatsApp: 01601855815</span>
+    <span><strong>✦</strong> FREE DELIVERY সারা বাংলাদেশ</span>
+    <span><strong>✦</strong> Cash on Delivery</span>
+    <span><strong>✦</strong> ৭ দিন Return Policy</span>
+    <span><strong>✦</strong> পণ্য দেখে টাকা পরিশোধ</span>
+    <span><strong>✦</strong> হটলাইন ও WhatsApp: 01601855815</span>
+  </div>
+</div>
+
+<!-- BANNER -->
+<div class="banner-wrap" id="home-section">
+ <div class="banner-3d-stage">
+  <div class="banner-tunnel" id="banner-tunnel"></div>
+  <div class="banner-slides" id="banner-slides"></div>
+  <div class="banner-vignette"></div>
+ </div>
+  <button class="banner-prev" onclick="slideBanner(-1)" aria-label="আগের">‹</button>
+  <button class="banner-next" onclick="slideBanner(1)" aria-label="পরের">›</button>
+  <div class="banner-dots" id="banner-dots"></div>
+</div>
+
+<!-- COUNTDOWN STRIP -->
+<div class="countdown-strip">
+  <span class="cs-label">⏳ আজকের অফার শেষ হবে</span>
+  <div class="cs-time">
+    <span id="th">00</span><span class="cs-colon">:</span><span id="tm">00</span><span class="cs-colon">:</span><span id="ts">00</span>
+  </div>
+</div>
+
+<!-- TOP CATEGORIES -->
+<div class="cats-section" id="cats-section">
+  <div class="sec-header"><div class="sec-title">Top Categories</div></div>
+  <div class="cats-scroll" id="cats-scroll"></div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="products-section" id="shop-section">
+  <div class="sec-header">
+    <div class="sec-title" id="sec-title-text">New Products</div>
+    <div class="p-count" id="p-count-lbl"></div>
+  </div>
+  <div class="products-grid" id="products-grid"></div>
+  <div class="p-rot-ctrl" id="p-rot-ctrl"><div class="p-rot-dots" id="p-rot-dots"></div><button type="button" class="p-rot-all" onclick="showAllProductsNow()">সব পণ্য দেখুন</button></div>
+  <div class="es" id="p-empty" style="display:none;"><div class="ei">📦</div><div>এই খোঁজে কোনো পণ্য নেই — অন্য নাম দিয়ে খুঁজুন</div></div>
+  <div class="es" id="p-loading" style="display:none;"><div class="ei">⏳</div><div>পণ্য লোড হচ্ছে...</div></div>
+  <div class="es" id="p-retry" style="display:none;"><div class="ei">⚠️</div><div>পণ্য লোড হয়নি — ইন্টারনেট চেক করে আবার চেষ্টা করুন</div><button onclick="loadProducts()" style="margin-top:10px;padding:8px 18px;border-radius:8px;border:none;background:var(--primary);color:#fff;font-family:'Hind Siliguri';cursor:pointer">আবার লোড করুন</button></div>
+</div>
+
+<!-- OFFERS PAGE -->
+<div class="page-section" id="offers-section">
+  <div style="text-align:center;padding:20px 0 14px;">
+    <div style="font-family:var(--head);font-size:24px;font-weight:800;margin-bottom:6px;">🔥 Special Offers</div>
+    <div style="color:var(--muted);font-size:14px;">সীমিত সময়ের অফার</div>
+  </div>
+  <div style="display:grid;gap:12px;">
+    <div style="background:rgba(215,50,42,.07);border:1px solid rgba(215,50,42,.25);border-radius:14px;padding:20px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">🎁</div>
+      <div style="font-family:var(--head);font-size:20px;font-weight:800;margin-bottom:5px;">Flash Sale</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px;">আজ রাত ১২টা পর্যন্ত বিশেষ ছাড়</div>
+      <button class="b-btn b-btn-fire" onclick="showTab('shop')">পণ্য দেখুন</button>
+    </div>
+    <div style="background:rgba(14,94,58,.06);border:1px solid rgba(14,94,58,.25);border-radius:14px;padding:20px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">🚚</div>
+      <div style="font-family:var(--head);font-size:20px;font-weight:800;margin-bottom:5px;">Free Delivery</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px;">সারা বাংলাদেশে বিনামূল্যে ডেলিভারি</div>
+      <button class="b-btn b-btn-purple" onclick="showTab('shop')">অর্ডার করুন</button>
+    </div>
+    <div style="background:rgba(232,163,23,.08);border:1px solid rgba(232,163,23,.3);border-radius:14px;padding:20px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">💬</div>
+      <div style="font-family:var(--head);font-size:20px;font-weight:800;margin-bottom:5px;">WhatsApp-এ অর্ডার</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:12px;">মেসেজ দিন, আমরা অর্ডার নিয়ে নেব</div>
+      <a class="b-btn b-btn-gold js-wa" href="https://wa.me/8801601855815" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;">WhatsApp করুন</a>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT PAGE -->
+<div class="page-section" id="contact-section">
+  <div class="contact-section">
+    <div style="font-family:var(--head);font-size:24px;font-weight:800;margin-bottom:14px;text-align:center;">📞 যোগাযোগ</div>
+    <div class="contact-card">
+      <div class="contact-title">আমাদের সাথে কথা বলুন</div>
+      <div class="contact-item"><div class="contact-icon">📞</div><div class="contact-text">হটলাইন: <a href="tel:01601855815">01601855815</a></div></div>
+      <div class="contact-item"><div class="contact-icon">💬</div><div class="contact-text">WhatsApp: <a href="https://wa.me/8801601855815" class="js-wa js-wa-num" target="_blank" rel="noopener">01601855815</a></div></div>
+      <div class="contact-item"><div class="contact-icon">✉️</div><div class="contact-text">Email: <a href="mailto:habibrahoman769@gmail.com" id="c-email">habibrahoman769@gmail.com</a></div></div>
+      <div class="contact-item"><div class="contact-icon">🌐</div><div class="contact-text"><a href="https://purushpower.com">purushpower.com</a></div></div>
+      <div class="contact-item"><div class="contact-icon">📘</div><div class="contact-text"><a href="#" id="c-fb">Facebook Page</a></div></div>
+      <div class="contact-item"><div class="contact-icon">🎵</div><div class="contact-text"><a href="#" id="c-tt">TikTok Page</a></div></div>
+      <div class="contact-item"><div class="contact-icon">▶️</div><div class="contact-text"><a href="#" id="c-yt">YouTube Channel</a></div></div>
+      <div class="contact-item"><div class="contact-icon">🕐</div><div class="contact-text">সকাল ৯টা — রাত ১১টা (প্রতিদিন)</div></div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-title">আমাদের সম্পর্কে</div>
+      <div style="font-size:13.5px;color:var(--muted);line-height:1.75;">PurushPower একটি বিশ্বস্ত অনলাইন শপ। আমরা মানসম্মত পণ্য সঠিক দামে সারা বাংলাদেশে ক্যাশ অন ডেলিভারিতে পৌঁছে দিই। পণ্য হাতে পেয়ে দেখে তারপর টাকা পরিশোধ করুন।</div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS — Admin → Reviews থেকে real customer review add করুন -->
+<div class="reviews-section rev-empty" id="reviews-section">
+ <div class="reviews-inner">
+  <div class="rev-banner" id="rev-banner">
+    <div class="rev-banner-txt">
+      <div class="rev-banner-title">💚 আমাদের সন্তুষ্ট গ্রাহক</div>
+      <div class="rev-banner-sub">সারা বাংলাদেশ থেকে গ্রাহকদের মতামত</div>
+      <div class="rev-banner-stat" id="rev-banner-stat"></div>
+    </div>
+  </div>
+  <div class="reviews-grid" id="reviews-grid"></div>
+ </div>
+</div>
+
+<footer>
+  <div style="display:flex;justify-content:center;margin-bottom:9px;">
+    <a class="brand" href="#" id="footer-logo" aria-label="PurushPower">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+        <path d="M14 13V10.5a6 6 0 0 1 12 0V13" fill="none" stroke="#E8A317" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M7.5 13h25l-1.8 21.2a3 3 0 0 1-3 2.8H12.3a3 3 0 0 1-3-2.8z" fill="#fff"/>
+        <text x="20" y="32" font-size="15" font-weight="800" fill="#0E5E3A" text-anchor="middle" font-family="Arial">P</text>
+      </svg>
+      <span class="brand-txt"><span class="brand-name">Purush<span class="brand-hl">Power</span></span><span class="brand-tag">.COM</span></span>
+    </a>
+  </div>
+  <div class="f-links">
+    <a href="#" id="f-fb">📘 Facebook</a>
+    <a href="#" id="f-tt">🎵 TikTok</a>
+    <a href="#" id="f-yt">▶️ YouTube</a>
+    <a href="https://wa.me/8801601855815" class="js-wa" target="_blank" rel="noopener">💬 WhatsApp</a>
+    <a href="tel:01601855815">📞 01601855815</a>
+    <a href="mailto:habibrahoman769@gmail.com" id="f-email">✉️ habibrahoman769@gmail.com</a>
+  </div>
+  <p class="f-copy" id="f-copy">© 2026 PurushPower — purushpower.com</p>
+</footer>
+
+<!-- WHATSAPP FLOATING BUTTON -->
+<a class="wa-float js-wa" id="wa-float" href="https://wa.me/8801601855815" target="_blank" rel="noopener" aria-label="WhatsApp-এ মেসেজ দিন">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bn-item active" id="bn-home" onclick="showTab('home')"><div class="bn-icon">🏠</div><div class="bn-label">Home</div></div>
+  <div class="bn-item" id="bn-shop" onclick="showTab('shop')"><div class="bn-icon">🛍️</div><div class="bn-label">Shop</div></div>
+  <div class="bn-item" id="bn-offers" onclick="showTab('offers')"><div class="bn-icon">🎁</div><div class="bn-label">Offers</div></div>
+  <div class="bn-item" id="bn-contact" onclick="showTab('contact')"><div class="bn-icon">📞</div><div class="bn-label">Contact</div></div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="mo" id="pd-overlay">
+  <div class="pd-modal">
+    <button class="mc" onclick="closeDetail()">✕</button>
+    <div id="pd-content"></div>
+  </div>
+</div>
+
+<!-- IMAGE ZOOM -->
+<div class="mo image-zoom-overlay" id="image-zoom-overlay" onclick="if(event.target===this)cm('image-zoom-overlay')">
+  <button class="zoom-close" onclick="cm('image-zoom-overlay')">✕</button>
+  <button class="zoom-nav" id="zoom-prev" onclick="zoomNav(-1)">‹</button>
+  <img id="zoom-img" src="" alt="">
+  <button class="zoom-nav zoom-nav-right" id="zoom-next" onclick="zoomNav(1)">›</button>
+  <div class="zoom-counter" id="zoom-counter"></div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="mo" id="order-overlay">
+  <div class="order-modal">
+    <button class="mc" onclick="cm('order-overlay')">✕</button>
+    <div id="order-form-wrap">
+      <div class="order-top-banner">
+        <div class="otb-emoji">🛒</div>
+        <div class="otb-line1">অর্ডার করুন — <span>স্টক সীমিত</span></div>
+        <div class="otb-line2">নাম, ঠিকানা ও মোবাইল নম্বর দিয়ে কনফার্ম করুন</div>
+        <div class="otb-urgency">⏰ আজকের অর্ডারে ফ্রি ডেলিভারি</div>
+      </div>
+      <div class="order-product-preview" id="order-prod-preview" style="display:none;">
+        <div class="opp-img" id="opp-img">📦</div>
+        <div>
+          <div class="opp-name" id="opp-name"></div>
+          <div><span class="opp-price" id="opp-price"></span><span class="opp-old" id="opp-old"></span></div>
+        </div>
+      </div>
+      <div class="order-qty-wrap" id="order-qty-wrap" style="display:none;">
+        <span class="oqw-label">পরিমাণ:</span>
+        <div class="oqw-controls">
+          <button class="oqw-btn" onclick="oChQty(-1)">−</button>
+          <span class="oqw-num" id="oqw-num">1</span>
+          <button class="oqw-btn" onclick="oChQty(1)">+</button>
+        </div>
+        <span class="oqw-total">মোট: <strong id="oqw-total">৳0</strong></span>
+      </div>
+      <div class="fg"><label>আপনার নাম *</label><input type="text" id="o-name" placeholder="পুরো নাম লিখুন"></div>
+      <div class="fg"><label>মোবাইল নম্বর *</label><input type="tel" id="o-phone" placeholder="01XXXXXXXXX"></div>
+      <div class="fg"><label>সম্পূর্ণ ঠিকানা *</label><textarea id="o-address" placeholder="বাড়ি, রাস্তা, এলাকা, জেলা..."></textarea></div>
+      <div class="fg"><label>বিশেষ মন্তব্য</label><input type="text" id="o-note" placeholder="কালার, সাইজ বা ডেলিভারি সম্পর্কে..."></div>
+      <div style="margin-bottom:12px;">
+        <div class="cod-free-badge">
+          <span style="font-size:18px;">🚚</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;">সম্পূর্ণ Free Delivery</div>
+            <div style="font-size:11px;color:var(--primary);">সারা বাংলাদেশে কোনো ডেলিভারি চার্জ নেই</div>
+          </div>
+        </div>
+      </div>
+      <div class="order-summary-table" id="order-summ" style="display:none;">
+        <div class="ost-row"><span>Product</span><span id="ost-p">—</span></div>
+        <div class="ost-row"><span>Price</span><span id="ost-pr">৳0</span></div>
+        <div class="ost-row"><span>Quantity</span><span id="ost-q">1</span></div>
+        <div class="ost-row"><span>Total</span><span id="ost-sub">৳0</span></div>
+        <div class="ost-row"><span>Delivery</span><span id="ost-del">৳0</span></div>
+        <div class="ost-row"><span>Total Amount</span><span class="ost-total-val" id="ost-tot">৳0</span></div>
+      </div>
+      <div style="margin-bottom:11px;">
+        <div class="cod-free-badge">
+          <span style="font-size:18px;">💵</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;">Cash on Delivery</div>
+            <div style="font-size:11px;color:var(--primary);">পণ্য হাতে পেয়ে টাকা দিন</div>
+          </div>
+        </div>
+      </div>
+      <button class="submit-btn" onclick="submitOrder()">✅ অর্ডার কনফার্ম করুন</button>
+    </div>
+    <div class="success-wrap" id="order-success" style="display:none;">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">অর্ডার সম্পন্ন!</div>
+      <p class="success-sub">আমরা শীঘ্রই <strong id="success-phone"></strong> নম্বরে যোগাযোগ করব।<br>PurushPower-এ অর্ডার করার জন্য ধন্যবাদ!</p>
+    </div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="mo" id="cart-overlay">
+  <div class="cart-modal">
+    <button class="mc" onclick="cm('cart-overlay')">✕</button>
+    <div style="font-family:var(--head);font-weight:800;font-size:18px;margin-bottom:12px;">🛒 Cart</div>
+    <div id="cart-items"></div>
+    <div id="cart-footer" style="display:none;margin-top:10px;">
+      <div class="order-summary-table" id="cart-total"></div>
+      <button class="submit-btn" onclick="checkoutCart()">অর্ডার করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXIT-INTENT OFFER MODAL -->
+<div class="mo" id="exit-offer-overlay">
+  <div class="pd-modal" style="text-align:center;">
+    <button class="mc" onclick="cm('exit-offer-overlay')">✕</button>
+    <div style="font-family:var(--head);font-weight:800;font-size:19px;color:var(--primary);margin:6px 0 4px;">⏳ যাওয়ার আগে একবার দেখুন</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">আমাদের সবচেয়ে বড় ছাড়ের পণ্য</div>
+    <div id="exit-offer-content"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+// FIREBASE INIT
+// PurushPower Firebase project: purushpower
+// ══════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyDi-l5wmOnisjQuyaoeb36mzXyUPc9WNfk",
+  authDomain: "purushpower.firebaseapp.com",
+  projectId: "purushpower",
+  storageBucket: "purushpower.firebasestorage.app",
+  messagingSenderId: "648061476532",
+  appId: "1:648061476532:web:becd4d878add7558e7c1e1"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+db.settings({ experimentalAutoDetectLongPolling: true });
+
+const STORE_DOC = db.collection('purushpower').doc('store');
+const PRODUCTS_COL = db.collection('purushpower_products');
+const ORDERS_COL = db.collection('purushpower_orders');
+
+// Shop contact defaults (admin Settings → Social → WhatsApp overrides the WhatsApp number)
+const SHOP_PHONE = '01601855815';
+const SHOP_WA_DEFAULT = '01601855815';
+
+const gd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}};
+const sd=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+function localDate(d){
+  const dt = d || new Date();
+  const pad = n => String(n).padStart(2,'0');
+  return dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate());
+}
+
+function cld(url,w){
+  if(typeof url!=='string' || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
+  if(url.includes('/upload/f_auto')) return url;
+  return url.replace('/upload/','/upload/f_auto,q_auto'+(w?',w_'+w:'')+'/');
+}
+
+function videoThumb(url,w){
+  if(typeof url!=='string' || !url.includes('res.cloudinary.com') || !url.includes('/video/upload/')) return '';
+  return url
+    .replace('/video/upload/','/video/upload/so_0,w_'+(w||400)+',q_auto,f_jpg/')
+    .replace(/\.(mp4|mov|webm|avi|mkv|m4v)(\?.*)?$/i,'.jpg$2');
+}
+
+function productThumb(p,w){
+  if(!p) return '';
+  const vt = videoThumb(p.videoUrl, w);
+  if(vt) return vt;
+  if(p.images && p.images.length) return cld(p.images[0], w);
+  if(p.imageUrl) return cld(p.imageUrl, w);
+  return '';
+}
+
+// ══════════════════════════════════
+// WHATSAPP — builds a wa.me link from the admin's WhatsApp number (Settings → Social),
+// falling back to 01601855815. Bangladeshi numbers starting with 0 get the 880 prefix.
+// ══════════════════════════════════
+function waNumber(){
+  let n = String((settings && settings.wa) || SHOP_WA_DEFAULT).replace(/\D/g,'');
+  if(n.startsWith('0')) n = '88' + n;
+  else if(n.length===10 && n.startsWith('1')) n = '880' + n;
+  return n;
+}
+function waLink(text){
+  return 'https://wa.me/' + waNumber() + (text ? '?text=' + encodeURIComponent(text) : '');
+}
+function updateWaLinks(){
+  document.querySelectorAll('.js-wa').forEach(a=>{ a.href = waLink('আসসালামু আলাইকুম, PurushPower থেকে একটি পণ্য সম্পর্কে জানতে চাই।'); });
+  const display = (settings && settings.wa) ? settings.wa : SHOP_WA_DEFAULT;
+  document.querySelectorAll('.js-wa-num').forEach(a=>{ a.textContent = display; });
+}
+const WA_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+
+function escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+let products=[], categories=[], settings={}, banners=[], reviews=[];
+let productsLoading=true, productsError=false;
+let cart=gd('bb_cart',[]);
+let curCat='all', curProd=null, curQty=1, delType='outside', selPayType='cod';
+let draftOrderId = null;
+let draftSaveTimer = null;
+let orderSubmitted = false;
+
+updateWaLinks();
+
+// ══════════════════════════════════
+// OFFER TIMER
+// ══════════════════════════════════
+function updTimer(){
+  const now=new Date(),end=new Date(now);end.setHours(23,59,59,999);
+  const diff=end-now;
+  const pad=n=>String(n).padStart(2,'0');
+  document.getElementById('th').textContent=pad(Math.floor(diff/3600000));
+  document.getElementById('tm').textContent=pad(Math.floor((diff%3600000)/60000));
+  document.getElementById('ts').textContent=pad(Math.floor((diff%60000)/1000));
+}
+updTimer();setInterval(updTimer,1000);
+
+// ══════════════════════════════════
+// BANNER
+// ══════════════════════════════════
+let bannerIdx=0;
+let TOTAL_BANNERS=1;
+let bannerTimer=null;
+
+function renderCustomerBanners(){
+  const activeBanners = banners.filter(b=>b.status==='Active');
+  const slidesWrap = document.getElementById('banner-slides');
+  const dotsWrap = document.getElementById('banner-dots');
+
+  if(!activeBanners.length){
+    // Default PurushPower banner — shown only until an Active banner is added from Admin → Banner/Slider.
+    slidesWrap.innerHTML = `<div class="banner-slide active bbd" data-i="0">
+      <span class="bbd-glow g1"></span><span class="bbd-glow g2"></span>
+      <div class="bbd-text">
+        <span class="bbd-pill">স্পেশাল অফার</span>
+        <div class="bbd-title">Purush<span>Power</span></div>
+        <div class="bbd-sub">সেরা দামে সেরা পণ্য · ক্যাশ অন ডেলিভারি</div>
+        <button class="bbd-btn" onclick="document.getElementById('products-grid').scrollIntoView({behavior:'smooth',block:'start'})">এখনই কিনুন →</button>
+      </div>
+      <svg class="bbd-art" viewBox="0 0 260 200" aria-hidden="true">
+        <circle cx="150" cy="104" r="86" fill="#1C8A56" opacity=".55"/>
+        <circle cx="150" cy="104" r="62" fill="#27A066" opacity=".45"/>
+        <g transform="translate(40 118) rotate(-10)">
+          <rect width="58" height="46" rx="6" fill="#D7322A"/><rect x="24" width="10" height="46" fill="#E8A317"/>
+          <rect x="-4" y="-10" width="66" height="14" rx="4" fill="#B8261F"/><rect x="24" y="-10" width="10" height="14" fill="#E8A317"/>
+          <path d="M29 -10c-10-14-24-8-16 0M29 -10c10-14 24-8 16 0" fill="none" stroke="#E8A317" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(112 38)">
+          <path d="M22 26V18a24 24 0 0 1 48 0v8" fill="none" stroke="#E8A317" stroke-width="7" stroke-linecap="round"/>
+          <path d="M4 26h84l-7 104a8 8 0 0 1-8 7H19a8 8 0 0 1-8-7z" fill="#FFFFFF"/>
+          <path d="M4 26h84l-1 12H5z" fill="#E6EFE9"/>
+          <text x="46" y="104" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="56" fill="#0E5E3A">P</text>
+        </g>
+        <g transform="translate(200 128) rotate(12)">
+          <rect width="40" height="34" rx="5" fill="#E8A317"/><rect x="16" width="8" height="34" fill="#FFFFFF"/>
+          <rect x="-3" y="-8" width="46" height="11" rx="3" fill="#C98A0C"/><rect x="16" y="-8" width="8" height="11" fill="#FFFFFF"/>
+        </g>
+        <path d="M222 40l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#FFD66B"/>
+        <path d="M60 50l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#FFD66B" opacity=".9"/>
+        <circle cx="236" cy="96" r="4" fill="#FFD66B"/><circle cx="86" cy="30" r="3" fill="#fff" opacity=".7"/>
+      </svg>
+    </div>`;
+    dotsWrap.innerHTML = '';
+    document.querySelector('.banner-prev').style.display='none';
+    document.querySelector('.banner-next').style.display='none';
+    TOTAL_BANNERS = 1;
+    bannerIdx = 0;
+    if(bannerTimer) clearInterval(bannerTimer);
+    renderTunnelCards([]);
+    return;
+  }
+
+  slidesWrap.innerHTML = activeBanners.map((b,i)=>{
+    let bg = '';
+    let mediaHtml = '';
+    const imgs = (b.images && b.images.length) ? b.images : (b.url ? [b.url] : []);
+    if(b.type==='image' && imgs.length){
+      if(imgs.length===1){
+        bg = `background-image:url('${cld(imgs[0],1600)}');background-size:cover;background-repeat:no-repeat;background-position:center;`;
+      } else {
+        mediaHtml = `<div class="banner-mini-slideshow" data-imgcount="${imgs.length}">
+          ${imgs.map((url,j)=>`<div class="bms-layer${j===0?' active':''}" style="background-image:url('${cld(url,1600)}');"></div>`).join('')}
+        </div>`;
+      }
+    } else if(b.type==='video' && b.videoUrl){
+      const v = b.videoUrl.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/');
+      mediaHtml = `<iframe src="${v}" style="position:absolute;inset:0;width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
+    } else {
+      bg = `background:${b.bg || 'linear-gradient(120deg,#0E5E3A,#1C8A56)'};`;
+    }
+    const hasText = !!(b.text || b.sub);
+    return `<div class="banner-slide${hasText?'':' no-text'}" data-i="${i}" style="${bg}">
+      <div class="banner-slide-overlay"></div>
+      ${mediaHtml}
+      <div class="b-content">
+        ${b.text?`<div class="b-title">${b.text}</div>`:''}
+        ${b.sub?`<div class="b-sub">${b.sub}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  dotsWrap.innerHTML = activeBanners.length>1 ? activeBanners.map((_,i)=>`<div class="banner-dot${i===0?' active':''}" onclick="goBanner(${i})"></div>`).join('') : '';
+
+  TOTAL_BANNERS = activeBanners.length;
+  bannerIdx = 0;
+  if(bannerTimer) clearInterval(bannerTimer);
+  if(TOTAL_BANNERS>1){
+    bannerTimer = setInterval(()=>goBanner(bannerIdx+1),4500);
+  }
+  goBanner(0);
+  startBannerMiniSlideshows();
+  renderTunnelCards([]);
+}
+
+let bannerMiniTimers = [];
+function startBannerMiniSlideshows(){
+  bannerMiniTimers.forEach(t=>clearInterval(t));
+  bannerMiniTimers = [];
+  document.querySelectorAll('.banner-mini-slideshow').forEach(container=>{
+    const layers = container.querySelectorAll('.bms-layer');
+    if(layers.length<2) return;
+    let idx = 0;
+    const timer = setInterval(()=>{
+      layers[idx].classList.remove('active');
+      idx = (idx+1) % layers.length;
+      layers[idx].classList.add('active');
+    }, 2500);
+    bannerMiniTimers.push(timer);
+  });
+}
+
+// Tunnel cards are hidden in this theme (clean rounded banner), kept as a no-op-safe function.
+function renderTunnelCards(images){
+  const tunnel = document.getElementById('banner-tunnel');
+  if(tunnel) tunnel.innerHTML='';
+}
+
+function goBanner(i){
+  bannerIdx=(i+TOTAL_BANNERS)%TOTAL_BANNERS;
+  document.querySelectorAll('.banner-slide').forEach((s,j)=>{
+    s.classList.toggle('active', j===bannerIdx);
+  });
+  document.querySelectorAll('.banner-dot').forEach((d,j)=>d.classList.toggle('active',j===bannerIdx));
+  const showArrows = TOTAL_BANNERS>1;
+  document.querySelector('.banner-prev').style.display = showArrows?'flex':'none';
+  document.querySelector('.banner-next').style.display = showArrows?'flex':'none';
+}
+function slideBanner(d){
+  if(bannerTimer) clearInterval(bannerTimer);
+  goBanner(bannerIdx+d);
+  if(TOTAL_BANNERS>1){ bannerTimer=setInterval(()=>goBanner(bannerIdx+1),4500); }
+}
+
+
+// ══════════════════════════════════
+// CUSTOMER REVIEWS (Admin → Reviews থেকে আসে; কোনো Active review না থাকলে section লুকানো থাকে)
+// ══════════════════════════════════
+function revEsc(t){ return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function renderCustomerReviews(){
+  const sec=document.getElementById('reviews-section');
+  const grid=document.getElementById('reviews-grid');
+  if(!sec||!grid) return;
+  const list=(reviews||[]).filter(r=>r && r.status!=='Inactive' && (r.text||r.photo));
+  const bn=document.getElementById('rev-banner');
+  const bimg=settings && settings.review_banner;
+  if(bimg){ bn.classList.add('has-img'); bn.innerHTML='<img src="'+revEsc(cld(bimg,1200))+'" alt="সন্তুষ্ট গ্রাহক" loading="lazy">'; }
+  if(!list.length){ sec.classList.add('rev-empty'); grid.innerHTML=''; return; }
+  sec.classList.remove('rev-empty');
+  const st=document.getElementById('rev-banner-stat');
+  if(st){ const avg=list.reduce((a,r)=>a+(+r.rating||5),0)/list.length; st.textContent='⭐ '+avg.toFixed(1)+' / 5 · '+list.length+' টি রিভিউ'; }
+  const colors=['#0E5E3A','#D7322A','#E8A317','#1C8A56','#2563EB','#7C3AED'];
+  grid.innerHTML=list.map((r,i)=>{
+    const n=Math.max(1,Math.min(5,+r.rating||5));
+    const nm=r.name||'গ্রাহক';
+    return `<div class="review-card">
+      ${r.photo?`<img class="rev-photo" src="${revEsc(cld(r.photo,600))}" alt="customer review" loading="lazy" onclick="window.open('${revEsc(r.photo)}','_blank')">`:''}
+      <div class="review-stars">${'★'.repeat(n)}${'☆'.repeat(5-n)}</div>
+      ${r.text?`<div class="review-text">${revEsc(r.text)}</div>`:''}
+      <div class="reviewer"><div class="rev-av" style="background:${colors[i%colors.length]}">${revEsc(nm.trim().charAt(0).toUpperCase())}</div><div><div class="rev-name">${revEsc(nm)}</div>${r.location?`<div class="rev-loc">📍 ${revEsc(r.location)}</div>`:''}</div></div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════
+// BOTTOM NAV TABS
+// ══════════════════════════════════
+function showTab(tab){
+  document.getElementById('home-section').style.display='none';
+  document.getElementById('cats-section').style.display='none';
+  document.getElementById('shop-section').style.display='none';
+  document.getElementById('reviews-section').style.display='none';
+  document.getElementById('offers-section').classList.remove('active');
+  document.getElementById('contact-section').classList.remove('active');
+  ['home','shop','offers','contact'].forEach(t=>{
+    document.getElementById('bn-'+t).classList.toggle('active',t===tab);
+  });
+  if(tab==='home'){
+    document.getElementById('home-section').style.display='block';
+    document.getElementById('cats-section').style.display='block';
+    document.getElementById('shop-section').style.display='block';
+    document.getElementById('reviews-section').style.display='block';
+    updateProductsTitle();
+  } else if(tab==='shop'){
+    document.getElementById('cats-section').style.display='block';
+    document.getElementById('shop-section').style.display='block';
+    document.getElementById('sec-title-text').textContent = curCat==='all' ? '🛍️ সব পণ্য' : curCat;
+  } else if(tab==='offers'){
+    document.getElementById('offers-section').classList.add('active');
+  } else if(tab==='contact'){
+    document.getElementById('contact-section').classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateProductsTitle(){
+  document.getElementById('sec-title-text').textContent = curCat==='all' ? 'New Products' : curCat;
+}
+
+// ══════════════════════════════════
+// LOGO
+// ══════════════════════════════════
+const DEFAULT_LOGO_HTML = {};
+let DEFAULT_FAVICON = null;
+function applyLogo(){
+  const url = settings.logo_url || '';
+  const alt = settings.sitename || 'PurushPower';
+  ['site-logo','footer-logo'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(DEFAULT_LOGO_HTML[id]===undefined) DEFAULT_LOGO_HTML[id] = el.innerHTML;
+    if(url){
+      el.innerHTML = `<img class="brand-img" src="${cld(url,400)}" alt="${alt}" onerror="this.parentNode.innerHTML=DEFAULT_LOGO_HTML['${id}']">`;
+    } else {
+      el.innerHTML = DEFAULT_LOGO_HTML[id];
+    }
+  });
+  const fav = document.getElementById('site-favicon');
+  if(fav){
+    if(DEFAULT_FAVICON===null) DEFAULT_FAVICON = fav.href;
+    fav.href = url ? cld(url,64) : DEFAULT_FAVICON;
+  }
+}
+
+// ══════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════
+let pixelsInjected = false;
+function applySettings(){
+  applyLogo();
+  updateWaLinks();
+  if(settings.fb){document.getElementById('f-fb').href=settings.fb;document.getElementById('c-fb').href=settings.fb;}
+  if(settings.tiktok){document.getElementById('f-tt').href=settings.tiktok;document.getElementById('c-tt').href=settings.tiktok;}
+  if(settings.yt){document.getElementById('f-yt').href=settings.yt;document.getElementById('c-yt').href=settings.yt;}
+  if(settings.footer) document.getElementById('f-copy').textContent=settings.footer;
+  if(settings.email){
+    const ce=document.getElementById('c-email'); if(ce){ ce.href='mailto:'+settings.email; ce.textContent=settings.email; }
+    const fe=document.getElementById('f-email'); if(fe){ fe.href='mailto:'+settings.email; fe.textContent='✉️ '+settings.email; }
+  }
+  const dop=document.getElementById('del-outside-p'); if(settings.dhaka_outside && dop) dop.textContent=settings.dhaka_outside+' টাকা';
+  const dip=document.getElementById('del-inside-p'); if(settings.dhaka_inside && dip) dip.textContent=settings.dhaka_inside+' টাকা';
+  injectTrackingPixels();
+}
+
+function fireViewContentEvent(p){
+  const value = p.sale||p.regular||0;
+  try{ if(typeof fbq === 'function'){ fbq('track', 'ViewContent', {content_name: p.name, content_ids: [p.id], value, currency: 'BDT'}); } }catch(e){ console.error(e); }
+  try{ if(typeof ttq !== 'undefined' && ttq.track){ ttq.track('ViewContent', {content_name: p.name, content_id: String(p.id), value, currency: 'BDT'}); } }catch(e){ console.error(e); }
+}
+
+function fireAddToCartEvent(p){
+  const value = p.sale||p.regular||0;
+  try{ if(typeof fbq === 'function'){ fbq('track', 'AddToCart', {content_name: p.name, content_ids: [p.id], value, currency: 'BDT'}); } }catch(e){ console.error(e); }
+  try{ if(typeof ttq !== 'undefined' && ttq.track){ ttq.track('AddToCart', {content_name: p.name, content_id: String(p.id), value, currency: 'BDT'}); } }catch(e){ console.error(e); }
+}
+
+function firePurchaseEvent(value, quantity){
+  try{ if(typeof fbq === 'function'){ fbq('track', 'Purchase', {value: value||0, currency: 'BDT', num_items: quantity||1}); } }catch(e){ console.error(e); }
+  try{ if(typeof ttq !== 'undefined' && ttq.track){ ttq.track('CompletePayment', {value: value||0, currency: 'BDT', quantity: quantity||1}); } }catch(e){ console.error(e); }
+}
+
+function extractFbPixelIds(text){
+  if(!text) return [];
+  const ids = new Set();
+  const initRegex = /fbq\s*\(\s*['"]init['"]\s*,\s*['"](\d{10,20})['"]/g;
+  let m;
+  while((m = initRegex.exec(text)) !== null) ids.add(m[1]);
+  if(ids.size === 0){
+    text.split(/[\s,;]+/).forEach(tok=>{ if(/^\d{15,16}$/.test(tok)) ids.add(tok); });
+  }
+  return Array.from(ids);
+}
+
+function extractTikTokPixelIds(text){
+  if(!text) return [];
+  const ids = new Set();
+  const loadRegex = /ttq\.load\s*\(\s*['"]([A-Z0-9]{15,30})['"]/g;
+  let m;
+  while((m = loadRegex.exec(text)) !== null) ids.add(m[1]);
+  if(ids.size === 0){
+    text.split(/[\s,;]+/).forEach(tok=>{ if(/^[A-Z0-9]{15,30}$/.test(tok) && /[A-Z]/.test(tok)) ids.add(tok); });
+  }
+  return Array.from(ids);
+}
+
+function loadFbEventsBase(){
+  if(window.fbq) return;
+  !function(f,b,e,v,n,t,s){
+    if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s);
+  }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+}
+
+function loadTikTokEventsBase(){
+  if(window.ttq && window.ttq.load) return;
+  !function(w,d,t){
+    w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];
+    ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+    ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+    for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+    ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+    ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=d.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+  }(window,document,'ttq');
+}
+
+function injectTrackingPixels(){
+  if(pixelsInjected) return;
+  if(!settings.fbpixel && !settings.tkpixel && !settings.ga) return;
+  pixelsInjected = true;
+
+  const fbIds = extractFbPixelIds(settings.fbpixel);
+  if(fbIds.length){
+    loadFbEventsBase();
+    fbIds.forEach(id=> fbq('init', id));
+    fbq('track', 'PageView');
+    fbIds.forEach(id=>{
+      const ns = document.createElement('noscript');
+      ns.innerHTML = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id='+id+'&ev=PageView&noscript=1"/>';
+      document.body.appendChild(ns);
+    });
+  }
+
+  const tkIds = extractTikTokPixelIds(settings.tkpixel);
+  if(tkIds.length){
+    loadTikTokEventsBase();
+    tkIds.forEach(id=> ttq.load(id));
+    ttq.page();
+  }
+
+  if(settings.ga){
+    const container = document.createElement('div');
+    container.innerHTML = settings.ga;
+    container.querySelectorAll('script').forEach(oldScript=>{
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes).forEach(attr=>newScript.setAttribute(attr.name, attr.value));
+      newScript.text = oldScript.textContent;
+      document.head.appendChild(newScript);
+    });
+    container.querySelectorAll('noscript').forEach(ns=>{
+      document.body.appendChild(ns.cloneNode(true));
+    });
+  }
+}
+
+// ══════════════════════════════════
+// TOP CATEGORIES — round photo cards. Uses the category's own image (admin → Categories),
+// otherwise the first product in that category, otherwise an emoji.
+// ══════════════════════════════════
+function catImage(c){
+  if(c.image) return cld(c.image,280);
+  const p = products.find(x=>x.category===c.name && x.status!=='Inactive' && productThumb(x,280));
+  return p ? productThumb(p,280) : '';
+}
+
+function findCatChip(cat){
+  return Array.from(document.querySelectorAll('.cat-chip')).find(c=>c.dataset.cat===cat);
+}
+
+function renderCategories(){
+  const wrap=document.getElementById('cats-scroll');
+  const active=categories.filter(c=>c.status==='Active');
+  let html = `<div class="cat-chip${curCat==='all'?' active':''}" data-cat="all" tabindex="0" role="button"><div class="cat-circle">🛍️</div><div class="cat-name">সব পণ্য</div></div>`;
+  html += active.map(c=>{
+    const img = catImage(c);
+    return `<div class="cat-chip${curCat===c.name?' active':''}" data-cat="${escAttr(c.name)}" tabindex="0" role="button">
+      <div class="cat-circle">${img?`<img src="${img}" alt="" loading="lazy" decoding="async">`:'🏷️'}</div>
+      <div class="cat-name">${c.name}</div>
+    </div>`;
+  }).join('');
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.cat-chip').forEach(el=>{
+    const go = ()=>{
+      filterCat(el.dataset.cat, el);
+      const sec=document.getElementById('shop-section');
+      if(sec && el.dataset.cat!=='all') sec.scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    el.onclick = go;
+    el.onkeydown = e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } };
+  });
+}
+
+function filterCat(cat,el){
+  curCat=cat;
+  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+  if(el) el.classList.add('active');
+  updateProductsTitle();
+  renderProducts();
+  try{
+    const url=new URL(window.location.href);
+    if(cat==='all'){
+      if(url.searchParams.has('category')){
+        url.searchParams.delete('category');
+        history.pushState({},'',url.toString());
+      }
+    } else if(url.searchParams.get('category')!==cat){
+      url.searchParams.set('category',cat);
+      history.pushState({category:cat},'',url.toString());
+    }
+  }catch(e){}
+}
+
+let _catDeepLinkHandled=false;
+function tryApplyDeepLinkCategory(){
+  if(_catDeepLinkHandled) return;
+  const params=new URLSearchParams(window.location.search);
+  const cat=params.get('category');
+  if(!cat) return;
+  const chip=findCatChip(cat);
+  if(chip){
+    _catDeepLinkHandled=true;
+    filterCat(cat,chip);
+  }
+}
+
+// ══════════════════════════════════
+// PRODUCTS
+// ══════════════════════════════════
+function renderProducts(){
+  const grid=document.getElementById('products-grid'),empty=document.getElementById('p-empty'),loadingEl=document.getElementById('p-loading'),retryEl=document.getElementById('p-retry');
+  if(productsLoading){
+    grid.innerHTML='';empty.style.display='none';retryEl.style.display='none';loadingEl.style.display='block';
+    document.getElementById('p-count-lbl').textContent='';
+    return;
+  }
+  if(productsError){
+    grid.innerHTML='';empty.style.display='none';loadingEl.style.display='none';retryEl.style.display='block';
+    document.getElementById('p-count-lbl').textContent='';
+    return;
+  }
+  loadingEl.style.display='none';retryEl.style.display='none';
+  const search=(document.getElementById('search-input').value||'').toLowerCase();
+  let f=products.filter(p=>p.status!=='Inactive');
+  if(curCat!=='all') f=f.filter(p=>p.category===curCat);
+  if(search) f=f.filter(p=>(p.name||'').toLowerCase().includes(search));
+  document.getElementById('p-count-lbl').textContent=f.length+' টি পণ্য';
+  if(!f.length){grid.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  // Home view (no category, no search): show one page at a time and auto-rotate every 3s.
+  const canRotate = false; // auto-rotation (3s product change) বন্ধ — সব প্রোডাক্ট একসাথে দেখাবে
+  if(canRotate){
+    rotList=f;
+    if(rotIdx*rotPageSize()>=f.length) rotIdx=0;
+    paintRotPage(false);
+    startProductRotation();
+  } else {
+    stopProductRotation();
+    document.getElementById('p-rot-ctrl').classList.remove('on');
+    grid.classList.remove('rot-mode'); grid.style.minHeight='';
+    grid.innerHTML=f.map(productCardHTML).join('');
+  }
+}
+
+function productCardHTML(p,i){
+    const disc=p.sale&&p.regular&&p.sale<p.regular?Math.round((1-p.sale/p.regular)*100):0;
+    const mainImg = productThumb(p, 400);
+    const imgAttrs = i<6 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+    return `<div class="pc" onclick="openDetail('${p._docId}')" style="animation-delay:${Math.min(i,10)*.03}s">
+      <div class="pc-img"><div class="pc-img-3d">
+        ${mainImg?`<img src="${mainImg}" alt="${escAttr(p.name)}" ${imgAttrs} decoding="async" onerror="this.style.display='none'">`:`<div class="pc-img-ph">📦</div>`}
+        </div>
+        ${p.videoUrl?'<div class="vid-badge">▶ Video</div>':''}
+        ${disc>0?`<div class="disc-badge">-${disc}%</div>`:''}
+      </div>
+      <div class="pc-body">
+        ${p.category?`<div class="pc-cat">${p.category}</div>`:''}
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-price"><span class="price-now">৳${(p.sale||p.regular||0).toLocaleString()}</span>${p.sale&&p.regular&&p.sale<p.regular?`<span class="price-old">৳${p.regular.toLocaleString()}</span>`:''}</div>
+        <button class="pc-btn" onclick="event.stopPropagation();openOrderModal('${p._docId}')">অর্ডার করুন</button>
+      </div>
+    </div>`;
+}
+
+// ── Home product auto-rotation ──
+var ROT_MS=3000;
+var rotList=[], rotIdx=0, rotTimer=null, rotPaused=false, rotResumeT=null, rotShowAll=false;
+function rotCols(){
+  const w=window.innerWidth;
+  return w>=1100?5:w>=800?4:w>=480?3:2;
+}
+function rotDefaultRows(){
+  const w=window.innerWidth;
+  return w>=800?2:w>=480?3:4;
+}
+// Page size adapts to how many products exist, so even a small shop (5-8 products)
+// gets at least 2 pages and visibly rotates. Always full rows.
+function rotPageSize(n){
+  if(n==null) n=rotList.length;
+  const c=rotCols();
+  const rows=Math.max(1,Math.min(rotDefaultRows(),Math.floor((n-1)/c)));
+  return c*rows;
+}
+function rotPageCount(){ return Math.max(1,Math.ceil(rotList.length/rotPageSize())); }
+function rotPageUrls(k){
+  const size=rotPageSize();
+  return rotList.slice(k*size,k*size+size).map(p=>productThumb(p,400)).filter(Boolean);
+}
+// Download + decode a page's images ahead of time so the swap is instant.
+const rotReady={};
+function preloadRotPage(k){
+  const key=k+'|'+rotPageSize();
+  if(rotReady[key]) return rotReady[key];
+  const jobs=rotPageUrls(k).map(u=>new Promise(res=>{
+    const im=new Image(); im.decoding='async';
+    im.onload=()=>{ (im.decode?im.decode():Promise.resolve()).then(res,res); };
+    im.onerror=res; im.src=u;
+  }));
+  rotReady[key]=Promise.race([Promise.all(jobs),new Promise(r=>setTimeout(r,2500))]);
+  return rotReady[key];
+}
+function rotLayerHTML(k){
+  const size=rotPageSize();
+  return rotList.slice(k*size,k*size+size).map((p,i)=>productCardHTML(p,0)).join('');
+}
+function updateRotDots(){
+  const n=rotPageCount();
+  document.getElementById('p-rot-ctrl').classList.add('on');
+  document.getElementById('p-rot-dots').innerHTML=n>1?Array.from({length:n},(_,k)=>
+    `<button type="button" class="p-rot-dot${k===rotIdx?' active':''}" aria-label="পেজ ${k+1}" onclick="goRotPage(${k})"></button>`).join(''):'';
+}
+function paintRotPage(fade){
+  const grid=document.getElementById('products-grid');
+  grid.classList.add('rot-mode');
+  let front=grid.querySelector('.rot-layer.front');
+  if(!fade || !front){
+    // first paint (or data refresh): draw directly, no animation
+    Object.keys(rotReady).forEach(k=>delete rotReady[k]);
+    grid.innerHTML=`<div class="rot-layer products-grid front">${rotLayerHTML(rotIdx)}</div><div class="rot-layer products-grid back"></div>`;
+    updateRotDots();
+    preloadRotPage((rotIdx+1)%rotPageCount());
+    return;
+  }
+  const back=grid.querySelector('.rot-layer.back');
+  const target=rotIdx;
+  preloadRotPage(target).then(()=>{
+    if(target!==rotIdx) return;            // user jumped elsewhere meanwhile
+    back.innerHTML=rotLayerHTML(target);
+    grid.style.minHeight=grid.offsetHeight+'px';   // keep height steady during swap
+    requestAnimationFrame(()=>{
+      back.classList.replace('back','front');
+      front.classList.replace('front','back');
+      setTimeout(()=>{ front.innerHTML=''; grid.style.minHeight=''; },470);
+    });
+    updateRotDots();
+    preloadRotPage((target+1)%rotPageCount());   // get the next one ready now
+  });
+}
+function goRotPage(k){ rotIdx=k; paintRotPage(true); pauseRotation(6000); }
+function startProductRotation(){
+  if(rotTimer) return;
+  rotTimer=setInterval(()=>{
+    if(rotPaused || document.hidden || rotList.length<=rotCols()) return;
+    rotIdx=(rotIdx+1)%rotPageCount();
+    paintRotPage(true);
+  },ROT_MS);
+}
+function stopProductRotation(){ if(rotTimer){ clearInterval(rotTimer); rotTimer=null; } }
+function pauseRotation(ms){
+  rotPaused=true;
+  clearTimeout(rotResumeT);
+  rotResumeT=setTimeout(()=>{ rotPaused=false; },ms||4000);
+}
+function showAllProductsNow(){
+  rotShowAll=true;
+  renderProducts();
+}
+(function(){
+  const grid=document.getElementById('products-grid');
+  if(!grid) return;
+  // pause while the visitor is looking/touching so a card doesn't vanish under their finger
+  grid.addEventListener('mouseenter',()=>{ rotPaused=true; clearTimeout(rotResumeT); });
+  grid.addEventListener('mouseleave',()=>pauseRotation(1500));
+  grid.addEventListener('touchstart',()=>pauseRotation(5000),{passive:true});
+  let rz=null, lastSize=rotPageSize();
+  window.addEventListener('resize',()=>{
+    clearTimeout(rz);
+    rz=setTimeout(()=>{ const ns=rotPageSize(); if(ns!==lastSize){ lastSize=ns; rotIdx=0; renderProducts(); } },200);
+  });
+})();
+
+// ══════════════════════════════════
+// PRODUCT DETAIL
+// ══════════════════════════════════
+function findProd(docId){ return products.find(x=>x._docId===docId); }
+
+let pdImages = [];
+
+function openDetail(docId){
+  const p=findProd(docId);if(!p)return;
+  curProd=p;curQty=1;
+  fireViewContentEvent(p);
+  const disc=p.sale&&p.regular&&p.sale<p.regular?Math.round((1-p.sale/p.regular)*100):0;
+  pdImages = (p.images && p.images.length) ? p.images : (p.imageUrl ? [p.imageUrl] : []);
+  let media='';
+  const hasVideo = !!p.videoUrl;
+  const hasImages = pdImages.length > 0;
+
+  if(hasVideo){
+    const url = p.videoUrl;
+    const isYt = url.includes('youtube.com') || url.includes('youtu.be');
+    if(isYt){
+      const v = url.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/');
+      media += `<iframe class="pd-vid" src="${v}" allowfullscreen></iframe>`;
+    } else {
+      const poster = hasImages ? cld(pdImages[0],800) : '';
+      media += `<video class="pd-vid" src="${url}" ${poster?`poster="${poster}"`:''} controls playsinline preload="metadata" style="background:#000;object-fit:contain;"></video>`;
+    }
+  }
+
+  if(hasImages){
+    if(!hasVideo){
+      media += `<div class="pd-img" id="pd-main-img" onclick="openImageZoom(0)"><img src="${cld(pdImages[0],800)}" alt="${escAttr(p.name)}"><span class="pd-zoom-hint">🔍</span></div>`;
+      if(pdImages.length>1){
+        media += `<div style="display:flex;gap:6px;margin-bottom:11px;overflow-x:auto;">${pdImages.map((url,i)=>
+          `<div onclick="setPdMainImage(${i})" style="width:54px;height:54px;flex-shrink:0;border-radius:8px;overflow:hidden;border:2px solid ${i===0?'var(--primary)':'var(--border)'};cursor:pointer;" id="pd-thumb-${i}">
+            <img src="${cld(url,150)}" style="width:100%;height:100%;object-fit:cover;">
+          </div>`).join('')}</div>`;
+      }
+    } else {
+      media += `<div style="font-size:12px;color:var(--muted);margin:8px 0 6px;">📷 আরও ছবি — ট্যাপ করে বড় করে দেখুন</div>`;
+      media += `<div style="display:flex;gap:8px;margin-bottom:11px;overflow-x:auto;padding-bottom:4px;">${pdImages.map((url,i)=>
+        `<div onclick="openImageZoom(${i})" style="width:88px;height:88px;flex-shrink:0;border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;position:relative;background:#fff;">
+          <img src="${cld(url,200)}" style="width:100%;height:100%;object-fit:cover;">
+          <span style="position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;">🔍</span>
+        </div>`).join('')}</div>`;
+    }
+  }
+
+  if(!hasVideo && !hasImages){
+    media = `<div class="pd-img" style="font-size:52px">📦</div>`;
+  }
+  const price = p.sale||p.regular||0;
+  const waMsg = 'আসসালামু আলাইকুম, আমি এই পণ্যটি অর্ডার করতে চাই:\n'+p.name+' — ৳'+price+'\n'+location.origin+location.pathname+'?product='+p._docId;
+  document.getElementById('pd-content').innerHTML=`
+    ${media}
+    <div class="pd-name">${p.name}</div>
+    <div class="pd-price-wrap"><span class="pd-price">৳${price.toLocaleString()}</span>${p.sale&&p.regular&&p.sale<p.regular?`<span class="pd-old">৳${p.regular.toLocaleString()}</span>`:''} ${disc>0?`<span class="pd-disc">-${disc}%</span>`:''}</div>
+    ${p.code?`<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Code: ${p.code}</div>`:''}
+    <div class="pd-delivery">✅ Free Delivery — সারা বাংলাদেশ</div>
+    <div class="qty-wrap">
+      <span class="qty-lbl">পরিমাণ:</span>
+      <button class="qty-btn" onclick="chQty(-1)">−</button>
+      <span class="qty-num" id="pd-qty">1</span>
+      <button class="qty-btn" onclick="chQty(1)">+</button>
+      <span class="qty-total">= <strong>৳<span id="pd-total">${price.toLocaleString()}</span></strong></span>
+    </div>
+    <button class="pd-order-btn" onclick="openOrderModal('${p._docId}')">🛒 অর্ডার করুন</button>
+    <a class="pd-wa-btn" href="${waLink(waMsg)}" target="_blank" rel="noopener">${WA_ICON} WhatsApp-এ অর্ডার করুন</a>
+    <button class="pd-cart-btn" onclick="addCart('${p._docId}');closeDetail()">+ Cart-এ যোগ করুন</button>
+    <a class="pd-call-btn" href="tel:${SHOP_PHONE}">📞 কল করুন — ${SHOP_PHONE}</a>
+    ${(p.desc||settings.product_disclaimer)?`<div class="pd-desc-title">পণ্যের বিবরণ</div>`:''}
+    ${p.desc?`<div class="pd-desc">${p.desc}</div>`:''}
+    ${settings.product_disclaimer?`<div class="pd-disclaimer">${settings.product_disclaimer}</div>`:''}
+  `;
+  om('pd-overlay');
+  try{
+    const url=new URL(window.location.href);
+    if(url.searchParams.get('product')!==docId){
+      url.searchParams.set('product',docId);
+      history.pushState({product:docId},'',url.toString());
+    }
+  }catch(e){}
+}
+
+function closeDetail(){
+  cm('pd-overlay');
+  try{
+    const url=new URL(window.location.href);
+    if(url.searchParams.has('product')){
+      url.searchParams.delete('product');
+      history.pushState({},'',url.toString());
+    }
+  }catch(e){}
+}
+
+let _deepLinkHandled=false;
+function tryOpenDeepLinkProduct(){
+  if(_deepLinkHandled) return;
+  const params=new URLSearchParams(window.location.search);
+  const pid=params.get('product');
+  if(!pid) return;
+  const p=findProd(pid);
+  if(p){
+    _deepLinkHandled=true;
+    openDetail(pid);
+  }
+}
+
+// ══════════════════════════════════
+// EXIT-INTENT OFFER POPUP
+// ══════════════════════════════════
+function getBestOfferProduct(){
+  const eligible = products.filter(p=>p.status!=='Inactive' && p.regular && p.sale && p.sale<p.regular);
+  if(!eligible.length) return null;
+  return eligible.reduce((best,p)=>{
+    const d = 1-(p.sale/p.regular);
+    const bd = best ? 1-(best.sale/best.regular) : -1;
+    return d>bd ? p : best;
+  }, null);
+}
+
+function showExitOffer(){
+  if(sessionStorage.getItem('bb_exit_shown')==='1') return;
+  const p = getBestOfferProduct();
+  if(!p) return;
+  sessionStorage.setItem('bb_exit_shown','1');
+  const disc = Math.round((1-p.sale/p.regular)*100);
+  const mainImg = productThumb(p, 600);
+  document.getElementById('exit-offer-content').innerHTML = `
+    <div style="position:relative;border-radius:14px;overflow:hidden;margin-bottom:12px;">
+      ${mainImg?`<img src="${mainImg}" alt="${escAttr(p.name)}" style="width:100%;height:200px;object-fit:cover;">`:`<div style="width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:52px;background:#f3f3f3;">📦</div>`}
+      <div style="position:absolute;top:10px;right:10px;background:var(--gold);color:#1b1300;font-weight:800;font-size:13px;padding:4px 10px;border-radius:20px;">-${disc}%</div>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;">${p.name}</div>
+    <div style="margin-bottom:14px;"><span style="font-family:var(--head);font-weight:800;font-size:20px;color:var(--accent);">৳${(p.sale).toLocaleString()}</span> <span style="text-decoration:line-through;color:var(--muted);margin-left:6px;">৳${p.regular.toLocaleString()}</span></div>
+    <button class="pd-order-btn" onclick="cm('exit-offer-overlay');openOrderModal('${p._docId}')">🛒 এখনই অর্ডার করুন</button>
+  `;
+  om('exit-offer-overlay');
+}
+
+document.addEventListener('mouseout', function(e){
+  if(!e.relatedTarget && !e.toElement && e.clientY<=0){
+    showExitOffer();
+  }
+});
+
+history.pushState({mbGuard:true},'',window.location.href);
+
+window.addEventListener('popstate',function(){
+  const params=new URLSearchParams(window.location.search);
+  const pid=params.get('product');
+  if(pid){
+    const p=findProd(pid);
+    if(p) openDetail(pid);
+    return;
+  }
+  cm('pd-overlay');
+  const cat=params.get('category');
+  const chip=cat ? findCatChip(cat) : null;
+  if(cat && chip){
+    curCat=cat;
+    document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    updateProductsTitle();
+    renderProducts();
+    return;
+  }
+  if(!cat){
+    const allChip=findCatChip('all');
+    if(allChip && curCat!=='all'){
+      curCat='all';
+      document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+      allChip.classList.add('active');
+      updateProductsTitle();
+      renderProducts();
+    }
+  }
+  showExitOffer();
+});
+
+let pdCurrentImgIdx = 0;
+function setPdMainImage(idx){
+  pdCurrentImgIdx = idx;
+  const mainImg = document.querySelector('#pd-main-img img');
+  if(mainImg && pdImages[idx]) mainImg.src = cld(pdImages[idx],800);
+  const mainWrap = document.getElementById('pd-main-img');
+  if(mainWrap) mainWrap.setAttribute('onclick','openImageZoom('+idx+')');
+  pdImages.forEach((_,i)=>{
+    const t = document.getElementById('pd-thumb-'+i);
+    if(t) t.style.borderColor = i===idx ? 'var(--primary)' : 'var(--border)';
+  });
+}
+
+let zoomImgIdx = 0;
+function openImageZoom(idx){
+  if(!pdImages.length) return;
+  zoomImgIdx = idx;
+  renderImageZoom();
+  om('image-zoom-overlay');
+}
+function renderImageZoom(){
+  const img = document.getElementById('zoom-img');
+  if(img) img.src = cld(pdImages[zoomImgIdx],1600);
+  document.getElementById('zoom-counter').textContent = (zoomImgIdx+1)+' / '+pdImages.length;
+  document.getElementById('zoom-prev').style.display = pdImages.length>1 ? 'flex' : 'none';
+  document.getElementById('zoom-next').style.display = pdImages.length>1 ? 'flex' : 'none';
+  document.getElementById('zoom-counter').style.display = pdImages.length>1 ? 'block' : 'none';
+}
+function zoomNav(d){
+  zoomImgIdx = (zoomImgIdx + d + pdImages.length) % pdImages.length;
+  renderImageZoom();
+}
+
+function chQty(d){curQty=Math.max(1,curQty+d);document.getElementById('pd-qty').textContent=curQty;if(curProd)document.getElementById('pd-total').textContent=((curProd.sale||curProd.regular||0)*curQty).toLocaleString();}
+
+// ══════════════════════════════════
+// DELIVERY — always free
+// ══════════════════════════════════
+function getDelCharge(){ return 0; }
+
+function updSumm(){
+  const p=curProd;if(!p)return;
+  const sub=(p.sale||p.regular||0)*curQty,del=getDelCharge(),tot=sub+del;
+  document.getElementById('ost-p').textContent=(p.name||'').substring(0,22);
+  document.getElementById('ost-pr').textContent='৳'+(p.sale||p.regular||0).toLocaleString();
+  document.getElementById('ost-q').textContent=curQty;
+  document.getElementById('ost-sub').textContent='৳'+sub.toLocaleString();
+  document.getElementById('ost-del').textContent='Free ✅';
+  document.getElementById('ost-tot').textContent='৳'+tot.toLocaleString();
+  document.getElementById('oqw-total').textContent='৳'+sub.toLocaleString();
+}
+
+// ══════════════════════════════════
+// ORDER
+// ══════════════════════════════════
+function openOrderModal(docId){
+  if(docId) curProd=findProd(docId)||curProd;
+  if(!curProd){
+    showToast('আগে একটি পণ্য সিলেক্ট করুন','#EF4444');
+    showTab('shop');
+    return;
+  }
+  draftOrderId = null;
+  orderSubmitted = false;
+  clearTimeout(draftSaveTimer);
+  document.getElementById('order-form-wrap').style.display='block';
+  document.getElementById('order-success').style.display='none';
+  const p=curProd;
+  if(p){
+    document.getElementById('order-prod-preview').style.display='flex';
+    const mainImg = productThumb(p, 120);
+    const imgEl=document.getElementById('opp-img');imgEl.innerHTML=mainImg?`<img src="${mainImg}" alt="">`:'📦';
+    document.getElementById('opp-name').textContent=p.name;
+    document.getElementById('opp-price').textContent='৳'+(p.sale||p.regular||0).toLocaleString();
+    document.getElementById('opp-old').textContent=p.sale&&p.regular&&p.sale<p.regular?'৳'+p.regular.toLocaleString():'';
+    document.getElementById('order-qty-wrap').style.display='flex';
+    document.getElementById('oqw-num').textContent=curQty;
+    document.getElementById('order-summ').style.display='block';
+    updSumm();
+  } else {
+    document.getElementById('order-prod-preview').style.display='none';
+    document.getElementById('order-qty-wrap').style.display='none';
+    document.getElementById('order-summ').style.display='none';
+  }
+  cm('pd-overlay');om('order-overlay');
+}
+function oChQty(d){curQty=Math.max(1,curQty+d);document.getElementById('oqw-num').textContent=curQty;updSumm();}
+
+// ══════════════════════════════════
+// INCOMPLETE / DRAFT ORDERS
+// ══════════════════════════════════
+function scheduleDraftSave(){
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer = setTimeout(saveDraftOrder, 1200);
+}
+
+function saveDraftOrder(){
+  if(orderSubmitted) return;
+  const name=document.getElementById('o-name').value.trim();
+  const phone=document.getElementById('o-phone').value.trim();
+  const address=document.getElementById('o-address').value.trim();
+  if(!name && !phone) return;
+  const p=curProd;
+  const now=new Date();
+  const mainImg = productThumb(p, 400);
+  const draftData={
+    name: name || '(নাম নেই)',
+    phone: phone || '',
+    address: address || '',
+    product: p?p.name:'Manual',
+    productId: p?p.id:null,
+    productImage: mainImg,
+    qty: curQty||1,
+    price: p?(p.sale||p.regular||0):0,
+    total: p?(p.sale||p.regular||0)*(curQty||1):0,
+    note: document.getElementById('o-note').value,
+    status:'Incomplete',
+    date: localDate(now),
+    time: now.toLocaleTimeString(),
+    createdAtTs: firebase.firestore.Timestamp.now(),
+    createdAt: now.toISOString(),
+    invoice: 'DRAFT-'+String(Date.now()).slice(-6)
+  };
+  if(draftOrderId){
+    ORDERS_COL.doc(draftOrderId).set(draftData,{merge:true}).catch(err=>console.error('Draft update error:',err));
+  } else {
+    ORDERS_COL.add(draftData).then(ref=>{
+      if(orderSubmitted){
+        ORDERS_COL.doc(ref.id).delete().catch(()=>{});
+      } else {
+        draftOrderId = ref.id;
+      }
+    }).catch(err=>console.error('Draft create error:',err));
+  }
+}
+
+['o-name','o-phone','o-address','o-note'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){ el.addEventListener('input', scheduleDraftSave); el.addEventListener('blur', saveDraftOrder); }
+});
+
+function submitOrder(){
+  const name=document.getElementById('o-name').value.trim();
+  const phone=document.getElementById('o-phone').value.trim();
+  const address=document.getElementById('o-address').value.trim();
+  if(!name||!phone||!address){showToast('নাম, মোবাইল ও ঠিকানা দিন','#EF4444');return;}
+  const p=curProd;
+  const del=getDelCharge();
+  const sub=p?(p.sale||p.regular||0)*(curQty||1):0;
+  const now=new Date();
+  const mainImg = productThumb(p, 400);
+  orderSubmitted = true;
+  clearTimeout(draftSaveTimer);
+  const order={
+    invoice:(settings.invoice_prefix||'BB')+String(Date.now()).slice(-6),name,phone,address,
+    product:p?p.name:'Manual',productId:p?p.id:null,productImage:mainImg,qty:curQty||1,price:p?(p.sale||p.regular||0):0,
+    delivery:del,total:sub+del,payment:'Cash on Delivery',
+    note:document.getElementById('o-note').value,deliveryType:delType,status:'Processing',
+    date:localDate(now),time:now.toLocaleTimeString(),
+    createdAtTs:firebase.firestore.Timestamp.now(),
+    createdAt:now.toISOString(),
+    isNew:true
+  };
+  const btn=document.querySelector('.submit-btn');
+  if(btn){btn.textContent='⏳ অপেক্ষা করুন...';btn.disabled=true;}
+
+  function onSuccess(){
+    document.getElementById('order-form-wrap').style.display='none';
+    document.getElementById('order-success').style.display='block';
+    const sp=document.getElementById('success-phone');if(sp)sp.textContent=phone;
+    firePurchaseEvent(order.total, order.qty);
+    curProd=null;curQty=1;draftOrderId=null;
+    if(btn){btn.textContent='✅ অর্ডার কনফার্ম করুন';btn.disabled=false;}
+  }
+  function onFail(err){
+    console.error(err);
+    orderSubmitted = false;
+    showToast('অর্ডার যায়নি — ইন্টারনেট চেক করে আবার চাপুন','#EF4444');
+    if(btn){btn.textContent='✅ অর্ডার কনফার্ম করুন';btn.disabled=false;}
+  }
+
+  if(draftOrderId){
+    ORDERS_COL.doc(draftOrderId).set(order,{merge:true}).then(onSuccess).catch(onFail);
+  } else {
+    ORDERS_COL.add(order).then(onSuccess).catch(onFail);
+  }
+}
+
+// ══════════════════════════════════
+// CART
+// ══════════════════════════════════
+function addCart(docId){
+  const p=findProd(docId);if(!p)return;
+  const mainImg = productThumb(p, 200);
+  const ex=cart.find(c=>c.id==docId);if(ex)ex.qty++;else cart.push({id:docId,name:p.name,price:p.sale||p.regular||0,imageUrl:mainImg,qty:1});
+  sd('bb_cart',cart);updateCart();showToast('Cart-এ যোগ হয়েছে ✅');
+  fireAddToCartEvent(p);
+}
+function updateCart(){document.getElementById('cart-count').textContent=cart.reduce((a,c)=>a+c.qty,0);}
+function openCart(){
+  const items=document.getElementById('cart-items'),footer=document.getElementById('cart-footer');
+  if(!cart.length){items.innerHTML='<div class="es"><div class="ei">🛒</div><div>Cart খালি — পছন্দের পণ্য যোগ করুন</div></div>';footer.style.display='none';}
+  else{
+    items.innerHTML=cart.map(c=>`<div class="ci-row"><div class="ci-img">${c.imageUrl?`<img src="${cld(c.imageUrl,100)}" alt="">`:'📦'}</div><div class="ci-info"><div class="ci-name">${c.name}</div><div class="ci-price">৳${(c.price*c.qty).toLocaleString()} (x${c.qty})</div></div><button class="ci-rm" onclick="rmCart('${c.id}')">✕</button></div>`).join('');
+    const tot=cart.reduce((a,c)=>a+c.price*c.qty,0);
+    document.getElementById('cart-total').innerHTML=`<div class="ost-row"><span>মোট</span><span class="ost-total-val">৳${tot.toLocaleString()}</span></div>`;
+    footer.style.display='block';
+  }
+  om('cart-overlay');
+}
+function rmCart(docId){cart=cart.filter(c=>c.id!==docId);sd('bb_cart',cart);updateCart();openCart();}
+function checkoutCart(){
+  if(!cart.length){ showToast('Cart খালি — আগে পণ্য যোগ করুন','#EF4444'); return; }
+  const first = findProd(cart[0].id);
+  cm('cart-overlay');
+  if(first){ curProd=first; curQty=cart[0].qty||1; openOrderModal(first._docId); }
+  else { showToast('আগে একটি পণ্য সিলেক্ট করুন','#EF4444'); showTab('shop'); }
+}
+
+// ══════════════════════════════════
+// MODAL
+// ══════════════════════════════════
+function om(id){document.getElementById(id).classList.add('active');}
+function cm(id){document.getElementById(id).classList.remove('active');}
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',function(e){if(e.target===this){if(this.id==='pd-overlay'){closeDetail();}else{this.classList.remove('active');}}}));
+
+function showToast(msg,bg='#16A34A'){const el=document.getElementById('toast');el.textContent=msg;el.style.background=bg;el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+updateCart();
+renderCategories();
+
+let storeDocLoaded=false; // live store doc = source of truth for banners/categories/settings
+STORE_DOC.onSnapshot(doc=>{
+  storeDocLoaded=true;
+  if(doc.exists){
+    const d=doc.data();
+    categories=d.categories||[];
+    settings=d.settings||{};
+    banners=d.banners||[];
+    reviews=d.reviews||[];
+  }
+  applySettings();
+  renderCategories();
+  renderCustomerBanners();
+  renderCustomerReviews();
+  tryApplyDeepLinkCategory();
+}, err=>{
+  console.error('Firebase settings sync error:',err);
+  showToast('সেটিংস লোড হয়নি — ইন্টারনেট চেক করুন','#EF4444');
+});
+
+const PRODUCTS_SNAPSHOT_DOC = db.collection('purushpower').doc('products-snapshot');
+
+let productsUnsub=null;
+let productsGotRealResponse=false;
+function loadProducts(){
+  try{
+    const cached = localStorage.getItem('bb_products_cache');
+    if(cached){
+      const parsed = JSON.parse(cached);
+      if(Array.isArray(parsed) && parsed.length){
+        products = parsed;
+        productsLoading = false;
+        renderProducts();
+        renderCategories();
+        renderCustomerBanners();
+        tryOpenDeepLinkProduct();
+      }
+    }
+  }catch(e){}
+  if(!products.length) { productsLoading=true; productsError=false; renderProducts(); }
+
+  PRODUCTS_SNAPSHOT_DOC.get().then(doc=>{
+    if(!doc.exists) return;
+    const data = doc.data();
+    if(!data) return;
+    let paintedSomething = false;
+    if(Array.isArray(data.products) && data.products.length && !productsGotRealResponse){
+      products = data.products;
+      productsLoading = false;
+      productsError = false;
+      renderProducts();
+      try{ localStorage.setItem('bb_products_cache', JSON.stringify(products)); }catch(e){}
+      paintedSomething = true;
+    }
+    // Only use snapshot banners/categories/settings if the live store doc hasn't answered yet,
+    // so an older snapshot can never replace the current banners after page load.
+    if(!storeDocLoaded){
+      if(Array.isArray(data.banners)){ banners = data.banners; paintedSomething = true; }
+      if(Array.isArray(data.categories)){ categories = data.categories; paintedSomething = true; }
+      if(data.settings && typeof data.settings === 'object'){ settings = data.settings; }
+    }
+    if(paintedSomething){
+      applySettings();
+      renderCategories();
+      renderCustomerBanners();
+      tryApplyDeepLinkCategory();
+      tryOpenDeepLinkProduct();
+    }
+  }).catch(err=>{
+    console.warn('Snapshot fast-path skipped:', err && err.message);
+  });
+
+  if(productsUnsub) productsUnsub();
+  productsUnsub = PRODUCTS_COL.onSnapshot(snap=>{
+    const fresh = snap.docs.map(d=>({...d.data(), _docId:d.id}));
+    if(!fresh.length && snap.metadata && snap.metadata.fromCache){
+      return;
+    }
+    if(!fresh.length && products.length){
+      console.warn('Firestore returned 0 products but local list has '+products.length+'; keeping existing list.');
+      return;
+    }
+    products = fresh;
+    productsLoading=false; productsError=false;
+    if(fresh.length) productsGotRealResponse = true;
+    renderProducts();
+    renderCategories();
+    renderCustomerBanners();
+    tryApplyDeepLinkCategory();
+    tryOpenDeepLinkProduct();
+    if(fresh.length){
+      try{ localStorage.setItem('bb_products_cache', JSON.stringify(fresh)); }catch(e){}
+    }
+    if(!fresh.length && !productsGotRealResponse){
+      productsError=true;
+      renderProducts();
+      showToast('পণ্য লোড হচ্ছে না — একটু পর আবার চেষ্টা করুন','#EF4444');
+      console.error('CRITICAL: Firestore returned 0 products on first fetch. Check Firestore console / rules / quota.');
+    }
+  }, err=>{
+    console.error('Firebase products load error:',err);
+    if(!products.length){
+      productsLoading=false; productsError=true;
+      renderProducts();
+      showToast('পণ্য লোড হয়নি — ইন্টারনেট চেক করুন','#EF4444');
+    }
+  });
+}
+loadProducts();
+</script>
+</body>
+</html>
