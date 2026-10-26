@@ -313,7 +313,8 @@ tr:hover td{background:rgba(0,0,0,0.02);}
 
 <!-- INCOMPLETE -->
 <div class="page" id="pg-incomplete">
-  <div class="ph"><div><div class="pt">Incomplete Orders</div></div></div>
+  <div class="ph"><div><div class="pt">Incomplete Orders</div><div style="font-size:12px;color:var(--muted);margin-top:2px;font-family:'Hind Siliguri';">যেগুলোর একই নম্বরে আসল অর্ডার হয়ে গেছে, সেগুলো এক ক্লিকে মুছুন</div></div>
+    <button class="btn btn-o" onclick="cleanIncomplete()">🧹 Confirmed গুলো মুছুন</button></div>
   <div class="tc">
     <div class="th"><div class="tt">Total <span id="inc-count">0</span></div>
       <input type="text" placeholder="🔍 Search..." style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:7px;font-size:13px;outline:none;" oninput="renderIncomplete(this.value)">
@@ -615,9 +616,11 @@ tr:hover td{background:rgba(0,0,0,0.02);}
       </div>
       <div class="sc2" id="st-blacklist" style="display:none;">
         <div class="ss-title">Blacklist</div>
-        <div class="fg"><label>IP Black List</label><textarea id="s-ibl" placeholder="43.255.20.20,103.102..."></textarea></div>
-        <div class="fg"><label>Phone Black List</label><textarea id="s-pbl" placeholder="01XXXXXXXXX,..."></textarea></div>
-        <div class="fg"><label>Single Order Mode</label><select id="s-so"><option value="inactive">Inactive</option><option value="active">Active</option></select></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;font-family:'Hind Siliguri';line-height:1.7;">এখানের নম্বর/IP থেকে website-এ অর্ডার নেওয়া হবে না। Order দেখার সময় (👁️ View) <b>🚫 Block</b> চাপলেও এখানে যোগ হয়ে যায়। একাধিক হলে কমা বা নতুন লাইনে দিন।</div>
+        <div class="fg"><label>IP Black List</label><textarea id="s-ibl" placeholder="43.255.20.20, 103.102.12.5"></textarea></div>
+        <div class="fg"><label>Phone Black List</label><textarea id="s-pbl" placeholder="01XXXXXXXXX, 01XXXXXXXXX"></textarea></div>
+        <div class="fg"><label>Single Order Mode (একই IP / নম্বর / মোবাইল থেকে বারবার অর্ডার বন্ধ)</label><select id="s-so"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        <div class="fg"><label>কত ঘণ্টা পর আবার অর্ডার করা যাবে</label><input type="number" id="s-soh" min="1" placeholder="24"></div>
         <button class="btn btn-p" onclick="saveS('blacklist')">✅ Save</button>
       </div>
       <div class="sc2" id="st-password" style="display:none;">
@@ -1615,7 +1618,12 @@ function viewOrder(docId){
       <div style="height:1px;background:var(--border);margin:8px 0"></div>
       <div style="display:flex;justify-content:space-between;font-weight:700;font-size:15px"><span>Total</span><span style="color:var(--green)">৳${(o.total||0).toLocaleString()}</span></div>
     </div>
-    ${o.note?`<div style="font-size:12px;color:var(--muted);margin-top:10px">📝 ${o.note}</div>`:''}`;
+    ${o.note?`<div style="font-size:12px;color:var(--muted);margin-top:10px">📝 ${o.note}</div>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);font-size:12px;">
+      <span style="color:var(--muted)">🌐 IP: <b style="color:var(--text)">${o.ip||'—'}</b></span>
+      ${o.ip?`<button class="btn btn-d btn-sm" onclick="blockIp('${o.ip}')">🚫 Block IP</button>`:''}
+      ${o.phone?`<button class="btn btn-d btn-sm" onclick="blockPhone('${o.phone}')">🚫 Block নম্বর</button>`:''}
+    </div>`;
   om('view-order-modal');
 }
 
@@ -1966,6 +1974,40 @@ function renderIncomplete(search=''){
       <button class="btn btn-d btn-sm" onclick="delOrder('${o._docId}')" title="Delete">🗑️</button>
     </div></td>
   </tr>`).join('');
+}
+
+
+// ══════════════════════════════════════════
+// FAKE ORDER — BLOCK + INCOMPLETE CLEANUP
+// ══════════════════════════════════════════
+function addToBlockList(key,val,label){
+  val=String(val||'').trim(); if(!val) return;
+  const list=String(settings[key]||'').split(/[\s,;]+/).map(t=>t.trim()).filter(Boolean);
+  if(list.includes(val)){ toast(label+' আগেই block করা আছে'); return; }
+  if(!confirm(val+' — block করবেন? এই '+label+' থেকে আর website-এ অর্ডার আসবে না।')) return;
+  list.push(val); settings[key]=list.join(', ');
+  saveAll(); toast('🚫 '+label+' block হয়েছে');
+}
+function blockIp(ip){ addToBlockList('ip_blacklist',ip,'IP'); }
+function blockPhone(ph){ addToBlockList('phone_blacklist',ph,'নম্বর'); }
+function cleanIncomplete(){
+  const list=incompleteOrdersCache.filter(o=>(o.phone||'').trim());
+  if(!list.length){ toast('মোছার মতো কিছু নেই'); return; }
+  const phones=[...new Set(list.map(o=>o.phone.trim()))];
+  toast('⏳ চেক করা হচ্ছে...');
+  Promise.all(phones.map(p=>ORDERS_COL.where('phone','==',p).limit(20).get()
+    .then(snap=>[p,snap.docs.some(d=>d.data().status!=='Incomplete')]).catch(()=>[p,false])))
+  .then(res=>{
+    const done=new Set(res.filter(r=>r[1]).map(r=>r[0]));
+    const del=list.filter(o=>done.has(o.phone.trim()));
+    if(!del.length){ toast('সব Incomplete-ই এখনো আসল অর্ডার হয়নি — কিছু মোছা হয়নি'); return; }
+    if(!confirm(del.length+' টা Incomplete অর্ডারের নম্বরে আসল অর্ডার হয়ে গেছে। মুছে ফেলবেন?')) return;
+    Promise.all(del.map(o=>ORDERS_COL.doc(o._docId).delete().catch(()=>{}))).then(()=>{
+      const ids=new Set(del.map(o=>o._docId));
+      incompleteOrdersCache=incompleteOrdersCache.filter(o=>!ids.has(o._docId));
+      renderIncomplete(); toast('🧹 '+del.length+' টা মুছে ফেলা হয়েছে');
+    });
+  });
 }
 
 function openESIncomplete(docId){
@@ -2861,7 +2903,7 @@ function loadSettings(){
   g('s-fb','fb'); g('s-tt','tiktok'); g('s-yt','yt'); g('s-ig','ig'); g('s-wa','wa');
   g('s-fbp','fbpixel'); g('s-tkp','tkpixel'); g('s-ga','ga');
   const cae=document.getElementById('cur-admin-email'); if(cae) cae.textContent=adminEmail;
-  g('s-ibl','ip_blacklist'); g('s-pbl','phone_blacklist'); g('s-so','single_order');
+  g('s-ibl','ip_blacklist'); g('s-pbl','phone_blacklist'); g('s-so','single_order'); g('s-soh','single_order_hours');
   renderLogoPreview();
 }
 
@@ -2873,7 +2915,7 @@ function saveS(tab){
     invoice:{invoice_prefix:'s-ip',invoice_perpage:'s-pp',invoice_info:'s-ii',invoice_note:'s-in'},
     social:{fb:'s-fb',tiktok:'s-tt',yt:'s-yt',ig:'s-ig',wa:'s-wa'},
     analytics:{fbpixel:'s-fbp',tkpixel:'s-tkp',ga:'s-ga'},
-    blacklist:{ip_blacklist:'s-ibl',phone_blacklist:'s-pbl',single_order:'s-so'}
+    blacklist:{ip_blacklist:'s-ibl',phone_blacklist:'s-pbl',single_order:'s-so',single_order_hours:'s-soh'}
   };
   if(map[tab]) Object.entries(map[tab]).forEach(([k,id])=>settings[k]=g(id));
   saveAll(); toast('Settings saved! ✅');

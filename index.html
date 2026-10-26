@@ -596,6 +596,7 @@ footer .brand-tag{color:var(--gold);}
       <div class="fg"><label>মোবাইল নম্বর *</label><input type="tel" id="o-phone" placeholder="01XXXXXXXXX"></div>
       <div class="fg"><label>সম্পূর্ণ ঠিকানা *</label><textarea id="o-address" placeholder="বাড়ি, রাস্তা, এলাকা, জেলা..."></textarea></div>
       <div class="fg"><label>বিশেষ মন্তব্য</label><input type="text" id="o-note" placeholder="কালার, সাইজ বা ডেলিভারি সম্পর্কে..."></div>
+      <input type="text" id="o-web" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
       <div style="margin-bottom:12px;">
         <div class="cod-free-badge">
           <span style="font-size:18px;">🚚</span>
@@ -622,6 +623,7 @@ footer .brand-tag{color:var(--gold);}
           </div>
         </div>
       </div>
+      <div id="o-guard-msg" style="display:none;background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C;border-radius:9px;padding:10px 12px;font-size:13.5px;line-height:1.6;margin-bottom:10px;"></div>
       <button class="submit-btn" onclick="submitOrder()">✅ অর্ডার কনফার্ম করুন</button>
     </div>
     <div class="success-wrap" id="order-success" style="display:none;">
@@ -742,6 +744,71 @@ let curCat='all', curProd=null, curQty=1, delType='outside', selPayType='cod';
 let draftOrderId = null;
 let draftSaveTimer = null;
 let orderSubmitted = false;
+let orderOpenedAt = 0;
+let orderBlocked = false;
+
+// ══════════════════════════════════
+// FAKE ORDER PROTECTION — IP / phone / device / blacklist / bot check
+// ══════════════════════════════════
+let clientIp = '';
+const ipReady = (function(){
+  const withTimeout=(p,ms)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(''),ms))]);
+  const tryIpify=()=>fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>d.ip||'');
+  const tryCf=()=>fetch('https://www.cloudflare.com/cdn-cgi/trace').then(r=>r.text()).then(t=>((t.match(/^ip=(.+)$/m)||[])[1]||'').trim());
+  return withTimeout(tryIpify().catch(()=>tryCf()).catch(()=>''),6000).then(ip=>{ clientIp=ip||''; return clientIp; });
+})();
+function getDeviceId(){
+  try{
+    let id=localStorage.getItem('pp_dev');
+    if(!id){ id='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); localStorage.setItem('pp_dev',id); }
+    return id;
+  }catch(e){ return ''; }
+}
+function normBDPhone(v){
+  v=String(v||'').replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).replace(/\D/g,'');
+  if(v.length===13 && v.startsWith('880')) v=v.slice(2);
+  else if(v.length===12 && v.startsWith('80')) v=v.slice(1);
+  if(v.length===10 && v.startsWith('1')) v='0'+v;
+  return v;
+}
+function isValidBDPhone(v){ return /^01[3-9]\d{8}$/.test(v); }
+function parseList(str){ return String(str||'').split(/[\s,;]+/).map(t=>t.trim()).filter(Boolean); }
+function guardMsg(html){
+  const el=document.getElementById('o-guard-msg'); if(!el) return;
+  if(!html){ el.style.display='none'; el.innerHTML=''; return; }
+  el.innerHTML=html; el.style.display='block';
+}
+function shopCallHtml(){
+  const ph=(settings&&settings.phone)||SHOP_PHONE;
+  return `প্রয়োজনে কল করুন: <a href="tel:${ph}" style="color:#B91C1C;font-weight:700;">${ph}</a>`;
+}
+function orderWindowHours(){ const h=parseFloat(settings&&settings.single_order_hours); return h>0?h:24; }
+function singleOrderOn(){ return !(settings && settings.single_order==='inactive'); }
+// Returns a Promise<{ok:true}|{ok:false,msg}>
+function checkOrderAllowed(phone){
+  const ipList=parseList(settings&&settings.ip_blacklist);
+  const phList=parseList(settings&&settings.phone_blacklist).map(normBDPhone);
+  return ipReady.then(ip=>{
+    if(phList.includes(phone) || (ip && ipList.includes(ip))){
+      return {ok:false,msg:'দুঃখিত, এই নম্বর/ডিভাইস থেকে অনলাইনে অর্ডার নেওয়া যাচ্ছে না। '+shopCallHtml()};
+    }
+    if(!singleOrderOn()) return {ok:true};
+    const hrs=orderWindowHours();
+    const since=Date.now()-hrs*3600*1000;
+    const blockMsg='আপনি গত '+hrs+' ঘণ্টার মধ্যে একটি অর্ডার করেছেন। আমরা শীঘ্রই কল করে কনফার্ম করব। আরেকটি অর্ডার করতে চাইলে '+shopCallHtml();
+    try{ const last=+localStorage.getItem('pp_last_order')||0; if(last>since) return {ok:false,msg:blockMsg}; }catch(e){}
+    const recent=snap=>snap.docs.some(d=>{
+      if(d.id===draftOrderId) return false;
+      const o=d.data(); if(!o || o.status==='Incomplete') return false;
+      const t=o.createdAtTs&&o.createdAtTs.toMillis?o.createdAtTs.toMillis():Date.parse(o.createdAt||'')||0;
+      return t>since;
+    });
+    const qs=[ORDERS_COL.where('phone','==',phone).limit(20).get()];
+    if(ip) qs.push(ORDERS_COL.where('ip','==',ip).limit(20).get());
+    return Promise.all(qs).then(snaps=>snaps.some(recent)?{ok:false,msg:blockMsg}:{ok:true})
+      .catch(err=>{ console.warn('Order check skipped:',err); return {ok:true}; }); // network problem → real order আটকাবো না
+  });
+}
 
 updateWaLinks();
 
@@ -1584,8 +1651,11 @@ function openOrderModal(docId){
     showTab('shop');
     return;
   }
-  draftOrderId = null;
+  draftOrderId = ORDERS_COL.doc().id; // একটাই doc — draft আর final order একই জায়গায়, তাই Incomplete-এ ডুপ্লিকেট থাকবে না
+  orderOpenedAt = Date.now();
   orderSubmitted = false;
+  orderBlocked = false;
+  guardMsg('');
   clearTimeout(draftSaveTimer);
   document.getElementById('order-form-wrap').style.display='block';
   document.getElementById('order-success').style.display='none';
@@ -1645,17 +1715,14 @@ function saveDraftOrder(){
     createdAt: now.toISOString(),
     invoice: 'DRAFT-'+String(Date.now()).slice(-6)
   };
-  if(draftOrderId){
-    ORDERS_COL.doc(draftOrderId).set(draftData,{merge:true}).catch(err=>console.error('Draft update error:',err));
-  } else {
-    ORDERS_COL.add(draftData).then(ref=>{
-      if(orderSubmitted){
-        ORDERS_COL.doc(ref.id).delete().catch(()=>{});
-      } else {
-        draftOrderId = ref.id;
-      }
-    }).catch(err=>console.error('Draft create error:',err));
-  }
+  if(document.getElementById('o-web') && document.getElementById('o-web').value) return; // bot
+  if(orderBlocked) return;
+  if(parseList(settings&&settings.phone_blacklist).map(normBDPhone).includes(normBDPhone(phone))) return;
+  if(clientIp && parseList(settings&&settings.ip_blacklist).includes(clientIp)) return;
+  if(!draftOrderId) draftOrderId = ORDERS_COL.doc().id;
+  draftData.ip = clientIp || '';
+  draftData.device = getDeviceId();
+  ORDERS_COL.doc(draftOrderId).set(draftData,{merge:true}).catch(err=>console.error('Draft save error:',err));
 }
 
 ['o-name','o-phone','o-address','o-note'].forEach(id=>{
@@ -1664,6 +1731,47 @@ function saveDraftOrder(){
 });
 
 function submitOrder(){
+  if(orderSubmitted) return;
+  const name=document.getElementById('o-name').value.trim();
+  const phoneEl=document.getElementById('o-phone');
+  const address=document.getElementById('o-address').value.trim();
+  guardMsg('');
+  if(!name||!phoneEl.value.trim()||!address){showToast('নাম, মোবাইল ও ঠিকানা দিন','#EF4444');return;}
+  // 1) Bot honeypot — চুপচাপ success দেখাই, কিছু save করি না
+  const hp=document.getElementById('o-web');
+  if(hp && hp.value){
+    orderSubmitted=true; clearTimeout(draftSaveTimer);
+    document.getElementById('order-form-wrap').style.display='none';
+    document.getElementById('order-success').style.display='block';
+    return;
+  }
+  // 2) Valid Bangladeshi number
+  const phone=normBDPhone(phoneEl.value);
+  if(!isValidBDPhone(phone)){ showToast('সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (01XXXXXXXXX)','#EF4444'); phoneEl.focus(); return; }
+  phoneEl.value=phone;
+  // 3) Basic sanity
+  if(name.replace(/\s/g,'').length<3){ showToast('পুরো নাম লিখুন','#EF4444'); return; }
+  if(address.replace(/\s/g,'').length<10){ showToast('পূর্ণ ঠিকানা লিখুন (এলাকা, থানা, জেলা)','#EF4444'); return; }
+  // 4) খুব দ্রুত submit = bot
+  if(orderOpenedAt && Date.now()-orderOpenedAt<3000){ showToast('একটু অপেক্ষা করে আবার চাপুন','#EF4444'); return; }
+  // 5) Blacklist + এক IP / নম্বর / ডিভাইস থেকে বারবার অর্ডার বন্ধ
+  const btn=document.querySelector('#order-form-wrap .submit-btn');
+  if(btn){btn.textContent='⏳ যাচাই করা হচ্ছে...';btn.disabled=true;}
+  checkOrderAllowed(phone).then(res=>{
+    if(btn){btn.textContent='✅ অর্ডার কনফার্ম করুন';btn.disabled=false;}
+    if(!res.ok){
+      guardMsg(res.msg);
+      // blocked attempt-এর draft Incomplete-এ রাখবো না
+      orderBlocked=true; clearTimeout(draftSaveTimer);
+      if(draftOrderId){ ORDERS_COL.doc(draftOrderId).delete().catch(()=>{}); draftOrderId=ORDERS_COL.doc().id; }
+      return;
+    }
+    orderBlocked=false;
+    submitOrderNow();
+  });
+}
+
+function submitOrderNow(){
   const name=document.getElementById('o-name').value.trim();
   const phone=document.getElementById('o-phone').value.trim();
   const address=document.getElementById('o-address').value.trim();
@@ -1683,7 +1791,9 @@ function submitOrder(){
     date:localDate(now),time:now.toLocaleTimeString(),
     createdAtTs:firebase.firestore.Timestamp.now(),
     createdAt:now.toISOString(),
-    isNew:true
+    isNew:true,
+    ip:clientIp||'',
+    device:getDeviceId()
   };
   const btn=document.querySelector('.submit-btn');
   if(btn){btn.textContent='⏳ অপেক্ষা করুন...';btn.disabled=true;}
@@ -1693,6 +1803,7 @@ function submitOrder(){
     document.getElementById('order-success').style.display='block';
     const sp=document.getElementById('success-phone');if(sp)sp.textContent=phone;
     firePurchaseEvent(order.total, order.qty);
+    try{ localStorage.setItem('pp_last_order', String(Date.now())); }catch(e){}
     curProd=null;curQty=1;draftOrderId=null;
     if(btn){btn.textContent='✅ অর্ডার কনফার্ম করুন';btn.disabled=false;}
   }
@@ -1703,11 +1814,8 @@ function submitOrder(){
     if(btn){btn.textContent='✅ অর্ডার কনফার্ম করুন';btn.disabled=false;}
   }
 
-  if(draftOrderId){
-    ORDERS_COL.doc(draftOrderId).set(order,{merge:true}).then(onSuccess).catch(onFail);
-  } else {
-    ORDERS_COL.add(order).then(onSuccess).catch(onFail);
-  }
+  if(!draftOrderId) draftOrderId = ORDERS_COL.doc().id;
+  ORDERS_COL.doc(draftOrderId).set(order,{merge:true}).then(onSuccess).catch(onFail);
 }
 
 // ══════════════════════════════════
